@@ -13,6 +13,23 @@ This is a basic example and there is missing a lot of context, like the data loa
 
 Additionally, the package "Numenta.HTM" is open source package developed by Numenta, it's a C# implementation of the HTM theory, this package is not part of the .net core or .net framework, you need to install it via NuGet package manager.
 
+**Encoder Implementation**
+
+An encoder is a component of the Hierarchical Temporal Memory (HTM) model that is used to convert raw input data into a sparse, distributed representation that can be used by the Spatial Pooler and Temporal Memory.
+
+C# code for implementing an encoder:
+https://github.com/wubie23/neocortexapi/blob/Wubishet/source/MySEProject/encoderImplementation.cs
+
+This code creates a new ScalarEncoder encoder, this encoder is used for encoding scalar value, it has some parameters like w, minval, maxval and n that are used to configure the encoder.
+
+Then, it encodes a value using the encoder.encode(value) method, which returns the encoded representation of the input value.
+
+You can also use the encoder.decode(encoded) method to decode the encoded value back to the original value.
+
+Note:
+
+In addition to ScalarEncoder, there are other types of encoders like DateEncoder, DeltaEncoder, GeospatialCoordinateEncoder, CategoryEncoder, and more, each one of them is specialized for a specific type of data, you can use the appropriate one for your data.
+
 **Spatial Pooler Implementation**
 
 The Spatial Pooler is an algorithm used in the Hierarchical Temporal Memory (HTM) model for reducing the dimensionality of input data. It learns which features are most informative and creates a sparse, distributed representation of the input.
