@@ -26,3 +26,17 @@ The spatialPooler.setPotentialRadius(16),spatialPooler.setPotentialPct(0.5),spat
 
 The spatialPooler.init() method is used to initialize the Spatial Pooler, and the spatialPooler.compute(input, true, output) method is used to compute the Spatial Pooler's output for a given input.
 
+**Temporal Memory Implementation** 
+
+The Temporal Memory (TM) is an algorithm used in the Hierarchical Temporal Memory (HTM) model for learning temporal patterns in data by creating sparse, distributed representations of the input.
+
+C# code for implementing the Temporal Memory:
+https://github.com/wubie23/neocortexapi/blob/Wubishet/source/MySEProject/temporalMemoryImplementation.cs
+
+This code creates a new Temporal Memory with specified column dimensions, sets its parameters, initializes the Temporal Memory, and then computes the Temporal Memory's output for a given input.
+
+The temporalMemory.setActivationThreshold(13),temporalMemory.setMinThreshold(10),temporalMemory.setMaxNewSynapseCount(20),temporalMemory.setInitialPermanence(0.21),temporalMemory.setConnectedPermanence(0.5),temporalMemory.setPermanenceIncrement(0.10),temporalMemory.setPermanenceDecrement(0.10) methods are used to set the Temporal Memory's parameters.
+
+The temporalMemory.init() method is used to initialize the Temporal Memory, and the temporalMemory.compute(input, output) method is used to compute the Temporal Memory's output for a given input.
+
+
