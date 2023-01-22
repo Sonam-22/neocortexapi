@@ -12,3 +12,17 @@ This code creates a new SDR classifier with specified input and column dimension
 This is a basic example and there is missing a lot of context, like the data loading, and it doesn't cover all the functionality that a real-world application would need.
 
 Additionally, the package "Numenta.HTM" is open source package developed by Numenta, it's a C# implementation of the HTM theory, this package is not part of the .net core or .net framework, you need to install it via NuGet package manager.
+
+**Spatial Pooler Implementation**
+
+The Spatial Pooler is an algorithm used in the Hierarchical Temporal Memory (HTM) model for reducing the dimensionality of input data. It learns which features are most informative and creates a sparse, distributed representation of the input.
+
+C# code for implementing the Spatial Pooler:
+https://github.com/wubie23/neocortexapi/blob/Wubishet/source/MySEProject/spatialPoolerImplementation.cs
+
+This code creates a new Spatial Pooler with specified input and column dimensions, sets its parameters, initializes the Spatial Pooler, and then computes the Spatial Pooler's output for a given input.
+
+The spatialPooler.setPotentialRadius(16),spatialPooler.setPotentialPct(0.5),spatialPooler.setGlobalInhibition(true),spatialPooler.setNumActiveColumnsPerInhArea(10),spatialPooler.setStimulusThreshold(0) methods are used to set the Spatial Pooler's parameters.
+
+The spatialPooler.init() method is used to initialize the Spatial Pooler, and the spatialPooler.compute(input, true, output) method is used to compute the Spatial Pooler's output for a given input.
+
