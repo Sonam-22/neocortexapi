@@ -112,3 +112,31 @@ namespace SDRClassifierExample
     }
 }
 ```
+
+
+```csharp
+
+// Import the Thrift-generated Neocortex service client
+using Neocortex;
+
+// Define your input data and convert it to an SDR
+int[] inputData = new int[] { 1, 2, 3, 4, 5 };
+SDREncoder encoder = new SDREncoder(200, 21, 0, 10);
+SDR inputSDR = encoder.Encode(inputData);
+
+// Define the parameters of the classifier
+int outputSDRSize = 50;
+SDRClassifier classifier = new SDRClassifier(outputSDRSize);
+
+// Train your classifier on a set of labeled input data
+Dictionary<string, SDR> labeledInputData = new Dictionary<string, SDR>();
+labeledInputData["data1"] = inputSDR;
+classifier.Learn("label1", labeledInputData);
+
+// Test your classifier on a set of data that it has not seen before
+SDR testInputSDR = encoder.Encode(new int[] { 6, 7, 8, 9, 10 });
+Dictionary<string, SDR> testLabeledInputData = new Dictionary<string, SDR>();
+testLabeledInputData["test_data1"] = testInputSDR;
+SDR testOutputSDR = classifier.Compute(testLabeledInputData);
+
+```
