@@ -147,10 +147,66 @@ namespace SDRClassifier
                 bucketIdxList = null;
             }
 
+            // Inference:
+            // For each active bit in the activationPattern, get the classification
+            // votes
             if (infer)
             {
                 retval = this.Infer(patternNZ, actValueList);
             }
+
+            if (learn && classification["bucketIdx"] != null)
+            {
+                foreach (var categoryI in Enumerable.Range(0, numCategory))
+                {
+                    var bucketIdx = bucketIdxList[categoryI];
+                    var actValue = actValueList[categoryI];
+                    // Update maxBucketIndex and augment weight matrix with zero padding
+                    if (bucketIdx > this.maxBucketIdx)
+                    {
+                        foreach (var nSteps in this.steps)
+                        {
+                            this.weightMatrix[nSteps] = np.concatenate(((NDArray, NDArray))(this.weightMatrix[nSteps], np.zeros(shape: (this.maxInputIdx + 1, bucketIdx - this.maxBucketIdx, this.maxBucketIdx))), axis: 1);
+                        }
+                        this.maxBucketIdx = Convert.ToInt32(bucketIdx);
+                    }
+                    // Update rolling average of actual values if it's a scalar. If it's
+                    // not, it must be a category, in which case each bucket only ever
+                    // sees one category so we don't need a running average.
+                    while (this.maxBucketIdx > this.actualValues.Count - 1)
+                    {
+                        this.actualValues.append(null);
+                    }
+                    if (this.actualValues[bucketIdx] == null)
+                    {
+                        this.actualValues[bucketIdx] = actValue;
+                    }
+                    else if (actValue is int || actValue is float || actValue is long)
+                    {
+                        this.actualValues[bucketIdx] = (1.0 - this.actValueAlpha) * this.actualValues[bucketIdx] + this.actValueAlpha * actValue;
+                    }
+                    else
+                    {
+                        this.actualValues[bucketIdx] = actValue;
+                    }
+                }
+                foreach (var _tup_1 in this.patternNZHistory)
+                {
+                    var learnRecordNum = _tup_1.Item1;
+                    var learnPatternNZ = _tup_1.Item2;
+                    var error = this.calculateError(recordNum, bucketIdxList);
+                    nSteps = recordNum - learnRecordNum;
+                    if (this.steps.Contains(nSteps))
+                    {
+                        foreach (var bit in learnPatternNZ)
+                        {
+                            this.weightMatrix[nSteps][bit, ":"] += this.alpha * error[nSteps];
+                        }
+                    }
+                }
+            }
+
+            
         }
 
         /// <summary>
