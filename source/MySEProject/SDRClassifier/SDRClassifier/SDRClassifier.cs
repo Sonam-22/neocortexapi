@@ -206,7 +206,26 @@ namespace SDRClassifier
                 }
             }
 
-            
+            // Verbose print
+            if (infer && this.verbosity >= 1)
+            {
+                Console.WriteLine("  inference: combined bucket likelihoods:");
+                Console.WriteLine("    actual bucket values:", retval["actualValues"]);
+                foreach (var _tup_2 in retval.items())
+                {
+                    nSteps = _tup_2.Item1;
+                    var votes = _tup_2.Item2;
+                    if (nSteps == "actualValues")
+                    {
+                        continue;
+                    }
+                    Console.WriteLine(String.Format("    %d steps: ", nSteps), pFormatArray(votes));
+                    var bestBucketIdx = votes.argmax();
+                    Console.WriteLine(String.Format("      most likely bucket idx: %d, value: %s", bestBucketIdx, retval["actualValues"][bestBucketIdx]));
+                }
+                Console.WriteLine();
+            }
+            return retval;
         }
 
         /// <summary>
@@ -269,7 +288,6 @@ namespace SDRClassifier
             var predictDist = expOutputActivation / np.sum(expOutputActivation);
             return predictDist;
         }
-
         
     }
 
