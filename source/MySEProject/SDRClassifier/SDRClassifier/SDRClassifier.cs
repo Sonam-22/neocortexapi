@@ -194,7 +194,7 @@ namespace SDRClassifier
                 {
                     var learnRecordNum = _tup_1.Item1;
                     var learnPatternNZ = _tup_1.Item2;
-                    var error = this.calculateError(recordNum, bucketIdxList);
+                    var error = this.CalculateError(recordNum, bucketIdxList);
                     nSteps = recordNum - learnRecordNum;
                     if (this.steps.Contains(nSteps))
                     {
@@ -288,7 +288,36 @@ namespace SDRClassifier
             var predictDist = expOutputActivation / np.sum(expOutputActivation);
             return predictDist;
         }
-        
+
+        // 
+        //     Calculate error signal
+        //     :param bucketIdxList: list of encoder buckets
+        //     :return: dict containing error. The key is the number of steps
+        //      The value is array of error at the output layer
+        //     
+        public virtual object CalculateError(int recordNum, object bucketIdxList)
+        {
+            var error = new Dictionary<object, object>();
+            var targetDist = numpy.zeros(this.maxBucketIdx + 1);
+            var numCategories = bucketIdxList.Count;
+            foreach (var bucketIdx in bucketIdxList)
+            {
+                targetDist[bucketIdx] = 1.0 / numCategories;
+            }
+            foreach (var _tup_1 in this.patternNZHistory)
+            {
+                var learnRecordNum = _tup_1.Item1;
+                var learnPatternNZ = _tup_1.Item2;
+                var nSteps = recordNum - learnRecordNum;
+                if (this.steps.Contains(nSteps))
+                {
+                    var predictDist = this.InferSingleStep(learnPatternNZ, this.weightMatrix[nSteps]);
+                    error[nSteps] = targetDist - predictDist;
+                }
+            }
+            return error;
+        }
+
     }
 
 }
