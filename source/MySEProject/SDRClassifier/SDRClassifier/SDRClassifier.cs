@@ -3,6 +3,7 @@ namespace SDRClassifier
     using NumSharp;
     using System;
     using System.Collections.Generic;
+    using System.Data;
     using System.Linq;
 
     public class SDRClassifier
@@ -163,7 +164,7 @@ namespace SDRClassifier
         /// </param>
         /// <returns>
         /// dict containing inference results, one entry for each step in
-        /// self.steps. The key is the number of steps, the value is an
+        /// steps. The key is the number of steps, the value is an
         /// array containing the relative likelihood for each bucketIdx
         /// starting from bucketIdx 0.
         /// </returns>
@@ -204,17 +205,35 @@ namespace SDRClassifier
         /// <returns>
         /// Multidimentional array of the predicted class label distribution
         /// </returns>
-        public object InferSingleStep(List<int> patternNZ, NDArray weightMatrix)
+        public double[] InferSingleStep(List<int> patternNZ, NDArray weightMatrix)
         {
-            var outputActivation = weightMatrix[patternNZ].sum(axis: 0);
-            // softmax normalization
-            outputActivation = outputActivation - np.max(outputActivation);
-            var expOutputActivation = np.exp(outputActivation);
-            var predictDist = expOutputActivation / np.sum(expOutputActivation);
-            return predictDist;
-        }
+            double[] outputActivation = new double[weightMatrix.shape[0]];
+            // Calculate activation values by summing the weighed inputs
+            for (int row = 0; row < weightMatrix.shape[0]; row++)
+            {
+                for (int col = 0; col < patternNZ.Count; col++)
+                {
+                    outputActivation[row] += weightMatrix[row, patternNZ[col]];
+                }
+            }
 
-        
+            // softmax normalization
+            // Exponentiate each activation value
+            double[] expOutputActivation = new double[outputActivation.Length];
+            for (int i = 0; i < expOutputActivation.Length; i++)
+            {
+                expOutputActivation[i] = Math.Exp(outputActivation[i]);
+            }
+            // Sum of Exponentiated activation value
+            double expOutputActivationSum = expOutputActivation.Sum();
+            double[] predictDist = new double[outputActivation.Length];
+            for (int i = 0; i < predictDist.Length; i++)
+            {
+                predictDist[i] = expOutputActivation[i] / expOutputActivationSum;
+            }
+ 
+            return predictDist;
+        }   
     }
 
 }
