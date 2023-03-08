@@ -308,10 +308,8 @@ namespace SDRClassifier
             }
  
             return predictDist;
-        }   
-        }
+        }  
 
-        // 
         //     Calculate error signal
         //     :param bucketIdxList: list of encoder buckets
         //     :return: dict containing error. The key is the number of steps
@@ -320,7 +318,7 @@ namespace SDRClassifier
         public virtual object CalculateError(int recordNum, object bucketIdxList)
         {
             var error = new Dictionary<object, object>();
-            var targetDist = numpy.zeros(this.maxBucketIdx + 1);
+            var targetDist = np.zeros(this.maxBucketIdx + 1);
             var numCategories = bucketIdxList.Count;
             foreach (var bucketIdx in bucketIdxList)
             {
