@@ -15,11 +15,11 @@ namespace SDRClassifier
         public double actValueAlpha;
         public double verbosity;
         private int maxSteps;
-        private LinkedList<Tuple<int, List<int>>> patternNZHistory = new();
+        private LinkedList<Tuple<int, List<int>>> patternNZHistory;
         private int maxInputIdx;
         private int maxBucketIdx;
         private Dictionary<int, NDArray> weightMatrix = new();
-        private List<object> actualValues = new();
+        private List<double?> actualValues;
 
         public SDRClassifier(List<int> steps, double alpha, double actValueAlpha, double verbosity, int version)
         {
@@ -46,7 +46,7 @@ namespace SDRClassifier
             // History of the last _maxSteps activation patterns. We need to keep
             // these so that we can associate the current iteration's classification
             // with the activationPattern from N steps ago
-            //this._patternNZHistory = this.deque(maxlen: this._maxSteps);
+            this.patternNZHistory = new();
             // This contains the value of the highest input number we've ever seen
             // It is used to pre-allocate fixed size arrays that hold the weights
             this.maxInputIdx = 0;
@@ -56,6 +56,7 @@ namespace SDRClassifier
             this.maxBucketIdx = 0;
             // The connection weight matrix
             this.weightMatrix = new Dictionary<int, NDArray>();
+
             foreach (var step in this.steps)
             {
                 this.weightMatrix.Add(step, np.zeros(shape: (this.maxInputIdx + 1, this.maxBucketIdx + 1)));
@@ -63,35 +64,30 @@ namespace SDRClassifier
             // This keeps track of the actual value to use for each bucket index. We
             // start with 1 bucket, no actual value so that the first infer has something
             // to return
-            this.actualValues = new List<object>();
+            this.actualValues = new List<double?>();
             // Set the version to the latest version.
             // This is used for serialization/deserialization
             this.version = version;
         }
 
-        private List<int> deque(int maxlen)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Compute(
+        public Dictionary<string, double[]> Compute(
                 int recordNum,
                 List<int> patternNZ,
-                Dictionary<string, object> classification,
+                Dictionary<string, double[]> classification,
                 bool learn,
                 bool infer)
         {
-            // int nSteps;
-            int numCategory;
-            List<object> actValueList;
-            object bucketIdxList;
+            //int nSteps;
+            int numCategory = 0;
+            double[] actValueList = new double[1];
+            double[] bucketIdxList = new double[1];
 
             if (this.verbosity >= 1)
             {
-                Console.WriteLine("  learn: {0}", learn);
-                Console.WriteLine("  recordNum {0}:", recordNum);
-                Console.WriteLine("  patternNZ {0}: {1}", patternNZ.Count, string.Join(",", patternNZ.ToArray()));
-                Console.WriteLine("  classificationIn: {0}", classification);
+                Console.WriteLine("learn: {0}", learn);
+                Console.WriteLine("recordNum {0}:", recordNum);
+                Console.WriteLine("patternNZ {0}: {1}", patternNZ.Count, string.Join(",", patternNZ.ToArray()));
+                Console.WriteLine("classificationIn: {0}", classification);
             }
             // ensures that recordNum increases monotonically
             if (this.patternNZHistory.Count > 0)
@@ -111,32 +107,23 @@ namespace SDRClassifier
             // To allow multi-class classification, we need to be able to run learning
             // without inference being on. So initialize retval outside
             // of the inference block.
-            var retval = new Dictionary<string, object>();
+            var retval = new Dictionary<string, double[]>();
             // Update maxInputIdx and augment weight matrix with zero padding
             if (patternNZ.Max() > this.maxInputIdx)
             {
                 var newMaxInputIdx = patternNZ.Max();
-                foreach (var nSteps in this.steps)
+                foreach (var step in this.steps)
                 {
-                    this.weightMatrix[nSteps] = np.concatenate(((NDArray, NDArray))(this.weightMatrix[nSteps], np.zeros(shape: (newMaxInputIdx - this.maxInputIdx, this.maxBucketIdx + 1))), axis: 0);
+                    this.weightMatrix[step] = np.concatenate(((NDArray, NDArray))(this.weightMatrix[step], np.zeros(shape: (newMaxInputIdx - this.maxInputIdx, this.maxBucketIdx + 1))), axis: 0);
                 }
                 this.maxInputIdx = Convert.ToInt32(newMaxInputIdx);
             }
             // Get classification info
             if (classification is not null)
             {
-                if (classification["bucketIdx"].GetType() != typeof(List<>))
-                {
-                    bucketIdxList = new List<object> { classification["bucketIdx"] };
-                    actValueList = new List<object> { classification["actValue"] };
-                    numCategory = 1;
-                }
-                else
-                {
-                    bucketIdxList = classification["bucketIdx"];
-                    actValueList = (List<object>)classification["actValue"];
-                    numCategory = ((List<object>)classification["bucketIdx"]).Count();
-                }
+                bucketIdxList = classification["bucketIdx"];
+                actValueList = classification["actValue"];
+                numCategory = classification["bucketIdx"].Count();
             }
             else
             {
@@ -144,8 +131,6 @@ namespace SDRClassifier
                 {
                     throw new InvalidDataException("classification cannot be None when learn=True");
                 }
-                actValueList = null;
-                bucketIdxList = null;
             }
 
             // Inference:
@@ -153,21 +138,21 @@ namespace SDRClassifier
             // votes
             if (infer)
             {
-                retval = this.Infer(patternNZ, actValueList);
+                retval = Infer(patternNZ, actValueList);
             }
 
-            if (learn && classification["bucketIdx"] != null)
+            if (learn && classification != null && classification["bucketIdx"] != null)
             {
                 foreach (var categoryI in Enumerable.Range(0, numCategory))
                 {
-                    var bucketIdx = bucketIdxList[categoryI];
+                    var bucketIdx = (int)bucketIdxList[categoryI];
                     var actValue = actValueList[categoryI];
                     // Update maxBucketIndex and augment weight matrix with zero padding
                     if (bucketIdx > this.maxBucketIdx)
                     {
-                        foreach (var nSteps in this.steps)
+                        foreach (int step in this.steps)
                         {
-                            this.weightMatrix[nSteps] = np.concatenate(((NDArray, NDArray))(this.weightMatrix[nSteps], np.zeros(shape: (this.maxInputIdx + 1, bucketIdx - this.maxBucketIdx, this.maxBucketIdx))), axis: 1);
+                            this.weightMatrix[step] = np.concatenate(((NDArray, NDArray))(this.weightMatrix[step], np.zeros(shape: (this.maxInputIdx + 1, bucketIdx - this.maxBucketIdx, this.maxBucketIdx))), axis: 1);
                         }
                         this.maxBucketIdx = Convert.ToInt32(bucketIdx);
                     }
@@ -176,27 +161,23 @@ namespace SDRClassifier
                     // sees one category so we don't need a running average.
                     while (this.maxBucketIdx > this.actualValues.Count - 1)
                     {
-                        this.actualValues.append(null);
+                        this.actualValues.Add(null);
                     }
                     if (this.actualValues[bucketIdx] == null)
                     {
                         this.actualValues[bucketIdx] = actValue;
                     }
-                    else if (actValue is int || actValue is float || actValue is long)
-                    {
-                        this.actualValues[bucketIdx] = (1.0 - this.actValueAlpha) * this.actualValues[bucketIdx] + this.actValueAlpha * actValue;
-                    }
                     else
                     {
-                        this.actualValues[bucketIdx] = actValue;
+                        this.actualValues[bucketIdx] = (1.0 - this.actValueAlpha) * ((double)this.actualValues[bucketIdx]) + this.actValueAlpha * actValue;
                     }
                 }
-                foreach (var _tup_1 in this.patternNZHistory)
+                foreach (var tuple in this.patternNZHistory)
                 {
-                    var learnRecordNum = _tup_1.Item1;
-                    var learnPatternNZ = _tup_1.Item2;
-                    var error = this.CalculateError(recordNum, bucketIdxList);
-                    nSteps = recordNum - learnRecordNum;
+                    var learnRecordNum = tuple.Item1;
+                    var learnPatternNZ = tuple.Item2;
+                    var error = CalculateError(recordNum, bucketIdxList);
+                    var nSteps = recordNum - learnRecordNum;
                     if (this.steps.Contains(nSteps))
                     {
                         foreach (var bit in learnPatternNZ)
@@ -210,19 +191,19 @@ namespace SDRClassifier
             // Verbose print
             if (infer && this.verbosity >= 1)
             {
-                Console.WriteLine("  inference: combined bucket likelihoods:");
-                Console.WriteLine("    actual bucket values:", retval["actualValues"]);
-                foreach (var _tup_2 in retval.items())
+                Console.WriteLine("inference: combined bucket likelihoods:");
+                Console.WriteLine("actual bucket values: {0}", retval["actualValues"]);
+                foreach (var keyValue in retval)
                 {
-                    nSteps = _tup_2.Item1;
-                    var votes = _tup_2.Item2;
+                    var nSteps = keyValue.Key;
+                    var votes = keyValue.Value;
                     if (nSteps == "actualValues")
                     {
                         continue;
                     }
-                    Console.WriteLine(String.Format("    %d steps: ", nSteps), pFormatArray(votes));
-                    var bestBucketIdx = votes.argmax();
-                    Console.WriteLine(String.Format("      most likely bucket idx: %d, value: %s", bestBucketIdx, retval["actualValues"][bestBucketIdx]));
+                    Console.WriteLine(String.Format("%d steps: ", nSteps), votes);
+                    var bestBucketIdx = np.array((double[])votes).argmax();
+                    Console.WriteLine(String.Format("most likely bucket idx: %d, value: %s", bestBucketIdx, retval["actualValues"][bestBucketIdx]));
                 }
                 Console.WriteLine();
             }
@@ -243,9 +224,9 @@ namespace SDRClassifier
         /// array containing the relative likelihood for each bucketIdx
         /// starting from bucketIdx 0.
         /// </returns>
-        public Dictionary<string, object> Infer(List<int> patternNZ, List<object>? actValueList)
+        public Dictionary<string, double[]> Infer(List<int> patternNZ, double[]? actValueList)
         {
-            object defaultValue;
+            double defaultValue = 0.0;
             /**
              * Return value dict. For buckets which we don't have an actual value
              * for yet, just plug in any valid actual value. It doesn't matter what
@@ -255,15 +236,16 @@ namespace SDRClassifier
             */
             if (this.steps[0] == 0 || actValueList == null)
             {
-                defaultValue = 0;
+                defaultValue = 0.0;
             }
             else
             {
                 defaultValue = actValueList[0];
             }
-            var actValues = (from x in this.actualValues
-                             select x != null ? x : defaultValue).ToList();
-            var retval = new Dictionary<string, object> { { "actualValues", actValues } };
+            var actValues = this.actualValues
+              .ConvertAll<double>(item => item ?? defaultValue)
+              .ToArray();
+            var retval = new Dictionary<string, double[]> { { "actualValues", actValues } };
             foreach (var nSteps in this.steps)
             {
                 var predictDist = this.InferSingleStep(patternNZ, this.weightMatrix[nSteps]);
@@ -278,17 +260,17 @@ namespace SDRClassifier
         /// <param name="patternNZ">list of the active indices from the output below</param>
         /// <param name="weightMatrix">Multidimentional array of the weight matrix</param>
         /// <returns>
-        /// Multidimentional array of the predicted class label distribution
+        ///  double[] of the predicted class label distribution
         /// </returns>
         public double[] InferSingleStep(List<int> patternNZ, NDArray weightMatrix)
         {
-            double[] outputActivation = new double[weightMatrix.shape[0]];
+            double[] outputActivation = new double[maxBucketIdx + 1];
             // Calculate activation values by summing the weighed inputs
-            for (int row = 0; row < weightMatrix.shape[0]; row++)
+            for (int row = 0; row <= maxBucketIdx; row++)
             {
-                for (int col = 0; col < patternNZ.Count; col++)
+                foreach (int col in patternNZ)
                 {
-                    outputActivation[row] += weightMatrix[row, patternNZ[col]];
+                    outputActivation[row] += weightMatrix[row, col];
                 }
             }
 
@@ -306,38 +288,37 @@ namespace SDRClassifier
             {
                 predictDist[i] = expOutputActivation[i] / expOutputActivationSum;
             }
- 
+
             return predictDist;
-        }  
+        }
 
         //     Calculate error signal
         //     :param bucketIdxList: list of encoder buckets
         //     :return: dict containing error. The key is the number of steps
         //      The value is array of error at the output layer
         //     
-        public virtual object CalculateError(int recordNum, object bucketIdxList)
+        public Dictionary<int, NDArray> CalculateError(int recordNum, double[] bucketIdxList)
         {
-            var error = new Dictionary<object, object>();
+            var error = new Dictionary<int, NDArray>();
             var targetDist = np.zeros(this.maxBucketIdx + 1);
-            var numCategories = bucketIdxList.Count;
-            foreach (var bucketIdx in bucketIdxList)
+            var numCategories = bucketIdxList.Count();
+            foreach (int bucketIdx in bucketIdxList)
             {
                 targetDist[bucketIdx] = 1.0 / numCategories;
             }
-            foreach (var _tup_1 in this.patternNZHistory)
+            foreach (var tuple in this.patternNZHistory)
             {
-                var learnRecordNum = _tup_1.Item1;
-                var learnPatternNZ = _tup_1.Item2;
+                var learnRecordNum = tuple.Item1;
+                var learnPatternNZ = tuple.Item2;
                 var nSteps = recordNum - learnRecordNum;
                 if (this.steps.Contains(nSteps))
                 {
-                    var predictDist = this.InferSingleStep(learnPatternNZ, this.weightMatrix[nSteps]);
+                    var predictDist = np.array<double>(InferSingleStep(learnPatternNZ, this.weightMatrix[nSteps]));
                     error[nSteps] = targetDist - predictDist;
                 }
             }
             return error;
         }
-
     }
 
 }
