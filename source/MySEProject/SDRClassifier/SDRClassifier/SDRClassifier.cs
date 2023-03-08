@@ -41,8 +41,10 @@ namespace SDRClassifier
             this.alpha = alpha;
             this.actValueAlpha = actValueAlpha;
             this.verbosity = verbosity;
+
             // Max # of steps of prediction we need to support
             this.maxSteps = this.steps.Max() + 1;
+
             // History of the last _maxSteps activation patterns. We need to keep
             // these so that we can associate the current iteration's classification
             // with the activationPattern from N steps ago
@@ -50,20 +52,24 @@ namespace SDRClassifier
             // This contains the value of the highest input number we've ever seen
             // It is used to pre-allocate fixed size arrays that hold the weights
             this.maxInputIdx = 0;
+
             // This contains the value of the highest bucket index we've ever seen
             // It is used to pre-allocate fixed size arrays that hold the weights of
             // each bucket index during inference
             this.maxBucketIdx = 0;
+
             // The connection weight matrix
             this.weightMatrix = new Dictionary<int, NDArray>();
             foreach (var step in this.steps)
             {
                 this.weightMatrix.Add(step, np.zeros(shape: (this.maxInputIdx + 1, this.maxBucketIdx + 1)));
             }
+
             // This keeps track of the actual value to use for each bucket index. We
             // start with 1 bucket, no actual value so that the first infer has something
             // to return
             this.actualValues = new List<object>();
+
             // Set the version to the latest version.
             // This is used for serialization/deserialization
             this.version = version;
@@ -74,14 +80,14 @@ namespace SDRClassifier
             throw new NotImplementedException();
         }
 
-        public void Compute(
+        public Dictionary<string, object> Compute(
                 int recordNum,
                 List<int> patternNZ,
                 Dictionary<string, object> classification,
                 bool learn,
                 bool infer)
         {
-            // int nSteps;
+            //int nSteps;
             int numCategory;
             List<object> actValueList;
             object bucketIdxList;
@@ -93,6 +99,7 @@ namespace SDRClassifier
                 Console.WriteLine("  patternNZ {0}: {1}", patternNZ.Count, string.Join(",", patternNZ.ToArray()));
                 Console.WriteLine("  classificationIn: {0}", classification);
             }
+
             // ensures that recordNum increases monotonically
             if (this.patternNZHistory.Count > 0)
             {
@@ -101,8 +108,8 @@ namespace SDRClassifier
                     throw new InvalidDataException("the record number has to increase monotonically");
                 }
             }
-            // Store pattern in our history if this is a new record
 
+            // Store pattern in our history if this is a new record
             if (this.patternNZHistory.Count == 0 || recordNum > this.patternNZHistory.Last?.Value?.Item1)
             {
                 this.patternNZHistory.AddLast(new LinkedListNode<Tuple<int, List<int>>>(new Tuple<int, List<int>>(recordNum, patternNZ)));
@@ -112,6 +119,7 @@ namespace SDRClassifier
             // without inference being on. So initialize retval outside
             // of the inference block.
             var retval = new Dictionary<string, object>();
+
             // Update maxInputIdx and augment weight matrix with zero padding
             if (patternNZ.Max() > this.maxInputIdx)
             {
@@ -122,6 +130,7 @@ namespace SDRClassifier
                 }
                 this.maxInputIdx = Convert.ToInt32(newMaxInputIdx);
             }
+
             // Get classification info
             if (classification is not null)
             {
@@ -162,6 +171,7 @@ namespace SDRClassifier
                 {
                     var bucketIdx = bucketIdxList[categoryI];
                     var actValue = actValueList[categoryI];
+
                     // Update maxBucketIndex and augment weight matrix with zero padding
                     if (bucketIdx > this.maxBucketIdx)
                     {
@@ -171,6 +181,7 @@ namespace SDRClassifier
                         }
                         this.maxBucketIdx = Convert.ToInt32(bucketIdx);
                     }
+
                     // Update rolling average of actual values if it's a scalar. If it's
                     // not, it must be a category, in which case each bucket only ever
                     // sees one category so we don't need a running average.
@@ -191,12 +202,13 @@ namespace SDRClassifier
                         this.actualValues[bucketIdx] = actValue;
                     }
                 }
+
                 foreach (var _tup_1 in this.patternNZHistory)
                 {
                     var learnRecordNum = _tup_1.Item1;
                     var learnPatternNZ = _tup_1.Item2;
                     var error = this.CalculateError(recordNum, bucketIdxList);
-                    nSteps = recordNum - learnRecordNum;
+                    var nSteps = recordNum - learnRecordNum;
                     if (this.steps.Contains(nSteps))
                     {
                         foreach (var bit in learnPatternNZ)
@@ -212,20 +224,22 @@ namespace SDRClassifier
             {
                 Console.WriteLine("  inference: combined bucket likelihoods:");
                 Console.WriteLine("    actual bucket values:", retval["actualValues"]);
+
                 foreach (var _tup_2 in retval.items())
                 {
-                    nSteps = _tup_2.Item1;
+                    var nSteps = _tup_2.Item1;
                     var votes = _tup_2.Item2;
                     if (nSteps == "actualValues")
                     {
                         continue;
                     }
-                    Console.WriteLine(String.Format("    %d steps: ", nSteps), pFormatArray(votes));
+                    Console.WriteLine(String.Format("    %d steps: ", nSteps), PFormatArray(votes));
                     var bestBucketIdx = votes.argmax();
                     Console.WriteLine(String.Format("      most likely bucket idx: %d, value: %s", bestBucketIdx, retval["actualValues"][bestBucketIdx]));
                 }
                 Console.WriteLine();
             }
+
             return retval;
         }
 
@@ -336,6 +350,11 @@ namespace SDRClassifier
                 }
             }
             return error;
+        }
+
+        public static string PFormatArray(double[] array, string fmt = "{0:0.00}")
+        {
+            return "[ " + string.Join(" ", array.Select(x => string.Format(fmt, x))) + " ]";
         }
 
     }
