@@ -143,7 +143,7 @@ namespace SDRClassifier
 
             if (learn && classification != null && classification["bucketIdx"] != null)
             {
-                foreach (var categoryI in Enumerable.Range(0, numCategory))
+                foreach (int categoryI in Enumerable.Range(0, numCategory))
                 {
                     var bucketIdx = (int)bucketIdxList[categoryI];
                     var actValue = actValueList[categoryI];
@@ -152,7 +152,8 @@ namespace SDRClassifier
                     {
                         foreach (int step in this.steps)
                         {
-                            this.weightMatrix[step] = np.concatenate(((NDArray, NDArray))(this.weightMatrix[step], np.zeros(shape: (this.maxInputIdx + 1, bucketIdx - this.maxBucketIdx, this.maxBucketIdx))), axis: 1);
+                            var toUpdate = ((NDArray, NDArray))(this.weightMatrix[step], np.zeros(shape: (maxInputIdx + 1, bucketIdx - maxBucketIdx)));
+                            this.weightMatrix[step] = np.concatenate(toUpdate, axis: 1);
                         }
                         this.maxBucketIdx = Convert.ToInt32(bucketIdx);
                     }
