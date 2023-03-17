@@ -40,6 +40,61 @@
             Assert.AreEqual(retVal["actualValues"][1], 20.0);
         }
 
+        [TestMethod]
+        public void TestComputeSingleIteration()
+        {
+            var classifier = new SDRClassifier(new List<int>() { 1 }, 0.001, 0.3, 0.0, 3);
+            int recordNum = 0;
+
+            Dictionary<string, double[]> result = compute(classifier, recordNum, new List<int> { 1, 5, 9 }, new double[] { 4 }, new double[] { 34.7 });
+
+            Assert.AreEqual(result["actualValues"].Length, 1);
+            Assert.AreEqual(result["actualValues"][0], 34.7);
+        }
+
+        [TestMethod]
+        public void TestComputeDoubleIteration()
+        {
+            var classifier = new SDRClassifier(new List<int>() { 1 }, 0.001, 0.3, 0.0, 3);
+            int recordNum = 0;
+            Dictionary<string, double[]> classification = new();
+            classification.Add("bucketIdx", new double[] { 4 });
+            classification.Add("actValue", new double[] { 34.7 });
+            classifier.Compute(recordNum, new List<int> { 1, 5, 9 }, classification, true, true);
+            Dictionary<string, double[]> result = classifier.Compute(++recordNum, new List<int> { 1, 5, 9 }, classification, true, true);
+
+            Assert.AreEqual(result["actualValues"][4], 34.7);
+        }
+
+        [TestMethod]
+        public void TestComputeMultipleEncoderPatterns()
+        {
+            var classifier = new SDRClassifier(new List<int>() { 1 }, 1.0, 0.1, 3, 1);
+            int recordNum = 0;
+
+            compute(classifier, recordNum++, new List<int> { 1, 5, 9 }, new double[] { 4 }, new double[] { 34.7 });
+            compute(classifier, recordNum++, new List<int> { 0, 6, 9, 11 }, new double[] { 5 }, new double[] { 41.7 });
+            compute(classifier, recordNum++, new List<int> { 6, 9 }, new double[] { 5 }, new double[] { 44.9 });
+            compute(classifier, recordNum++, new List<int> { 1, 5, 9 }, new double[] { 4 }, new double[] { 42.9 });
+
+            Dictionary<string, double[]> result = compute(classifier, recordNum++, new List<int> { 1, 5, 9 }, new double[] { 4 }, new double[] { 34.7 });
+
+            Assert.IsNotNull(result["1"]);
+            Assert.IsNotNull(result["actualValues"]);
+            Assert.AreEqual(result.Keys.Count(), 2);
+            Assert.AreEqual(result["actualValues"][4], 35.520000457763672, 0.00001);
+            Assert.AreEqual(result["actualValues"][5], 42.020000457763672, 0.00001);
+            var resultStep1 = result["1"];
+            Assert.AreEqual(resultStep1.Length, 6);
+            Assert.AreEqual(resultStep1[0], 0.034234, 0.00001);
+            Assert.AreEqual(resultStep1[1], 0.034234, 0.00001);
+            Assert.AreEqual(resultStep1[2], 0.034234, 0.00001);
+            Assert.AreEqual(resultStep1[3], 0.034234, 0.00001);
+            Assert.AreEqual(resultStep1[4], 0.093058, 0.00001);
+            Assert.AreEqual(resultStep1[5], 0.770004, 0.00001);
+        }
+
+
         private Dictionary<string, double[]> compute(SDRClassifier classifier,
                                                  int recordNum,
                                                  List<int> pattern,
@@ -50,7 +105,9 @@
             Dictionary<string, double[]> classification = new();
             classification.Add("bucketIdx", bucket);
             classification.Add("actValue", value);
-            return classifier.Compute(recordNum, pattern, classification, true, true);
+            var retVal = classifier.Compute(recordNum, pattern, classification, true, true);
+            Console.WriteLine("**************************************************************************");
+            return retVal;
         }
     }
 
