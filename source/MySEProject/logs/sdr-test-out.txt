@@ -1,0 +1,292 @@
+----- Running tests in class "SdRClassifierTest.SDRClassifierTest" -----
+
+MSBuild version 17.5.0-preview-23061-01+040e2a90e for .NET
+  SDRClassifier -> /Users/sonampriya/repository/SDR-Classifier/neocortexapi/source/MySEProject/SDRClassifier/SDRClassifier/bin/Debug/net7.0/SDRClassifier.dll
+  SdRClassifierTest -> /Users/sonampriya/repository/SDR-Classifier/neocortexapi/source/MySEProject/SDRClassifier/SdRClassifierTest/bin/Debug/net7.0/SdRClassifierTest.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.38
+
+
+----- Test Execution Summary -----
+
+SdRClassifierTest.SDRClassifierTest.TestSingleBucketValue:
+    Outcome: Passed
+    Standard Output Messages:
+    learn: True
+recordNum 0:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0]},{"Key":"actValue","Value":[10]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10
+1 steps: 1
+most likely bucket idx: 0, value: 10
+**************************************************************************
+learn: True
+recordNum 1:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0]},{"Key":"actValue","Value":[10]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10
+1 steps: 1
+most likely bucket idx: 0, value: 10
+**************************************************************************
+learn: True
+recordNum 2:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0]},{"Key":"actValue","Value":[10]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10
+1 steps: 1
+most likely bucket idx: 0, value: 10
+**************************************************************************
+learn: True
+recordNum 3:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0]},{"Key":"actValue","Value":[10]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10
+1 steps: 1
+most likely bucket idx: 0, value: 10
+**************************************************************************
+learn: True
+recordNum 4:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0]},{"Key":"actValue","Value":[10]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10
+1 steps: 1
+most likely bucket idx: 0, value: 10
+**************************************************************************
+learn: True
+recordNum 5:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0]},{"Key":"actValue","Value":[10]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10
+1 steps: 1
+most likely bucket idx: 0, value: 10
+**************************************************************************
+learn: True
+recordNum 6:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0]},{"Key":"actValue","Value":[10]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10
+1 steps: 1
+most likely bucket idx: 0, value: 10
+**************************************************************************
+learn: True
+recordNum 7:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0]},{"Key":"actValue","Value":[10]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10
+1 steps: 1
+most likely bucket idx: 0, value: 10
+**************************************************************************
+learn: True
+recordNum 8:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0]},{"Key":"actValue","Value":[10]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10
+1 steps: 1
+most likely bucket idx: 0, value: 10
+**************************************************************************
+learn: True
+recordNum 9:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0]},{"Key":"actValue","Value":[10]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10
+1 steps: 1
+most likely bucket idx: 0, value: 10
+**************************************************************************
+
+    
+SdRClassifierTest.SDRClassifierTest.TestMultipleBucketValues:
+    Outcome: Passed
+    Standard Output Messages:
+    learn: True
+recordNum 0:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0,1]},{"Key":"actValue","Value":[10,20]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10
+1 steps: 1
+most likely bucket idx: 0, value: 10
+**************************************************************************
+learn: True
+recordNum 1:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0,1]},{"Key":"actValue","Value":[10,20]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10,20
+1 steps: 0.5,0.5
+most likely bucket idx: 0, value: 10
+**************************************************************************
+learn: True
+recordNum 2:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0,1]},{"Key":"actValue","Value":[10,20]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10,20
+1 steps: 0.5,0.5
+most likely bucket idx: 0, value: 10
+**************************************************************************
+learn: True
+recordNum 3:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0,1]},{"Key":"actValue","Value":[10,20]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10,20
+1 steps: 0.5,0.5
+most likely bucket idx: 0, value: 10
+**************************************************************************
+learn: True
+recordNum 4:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0,1]},{"Key":"actValue","Value":[10,20]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10,20
+1 steps: 0.5,0.5
+most likely bucket idx: 0, value: 10
+**************************************************************************
+learn: True
+recordNum 5:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0,1]},{"Key":"actValue","Value":[10,20]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10,20
+1 steps: 0.5,0.5
+most likely bucket idx: 0, value: 10
+**************************************************************************
+learn: True
+recordNum 6:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0,1]},{"Key":"actValue","Value":[10,20]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10,20
+1 steps: 0.5,0.5
+most likely bucket idx: 0, value: 10
+**************************************************************************
+learn: True
+recordNum 7:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0,1]},{"Key":"actValue","Value":[10,20]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10,20
+1 steps: 0.5,0.5
+most likely bucket idx: 0, value: 10
+**************************************************************************
+learn: True
+recordNum 8:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0,1]},{"Key":"actValue","Value":[10,20]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10,20
+1 steps: 0.5,0.5
+most likely bucket idx: 0, value: 10
+**************************************************************************
+learn: True
+recordNum 9:
+patternNZ 2: 1,5
+classificationIn: [{"Key":"bucketIdx","Value":[0,1]},{"Key":"actValue","Value":[10,20]}]
+inference: combined bucket likelihoods:
+actual bucket values: 10,20
+1 steps: 0.5,0.5
+most likely bucket idx: 0, value: 10
+**************************************************************************
+
+    
+SdRClassifierTest.SDRClassifierTest.TestComputeSingleIteration:
+    Outcome: Passed
+    Standard Output Messages:
+    learn: True
+recordNum 0:
+patternNZ 3: 1,5,9
+classificationIn: [{"Key":"bucketIdx","Value":[4]},{"Key":"actValue","Value":[34.7]}]
+inference: combined bucket likelihoods:
+actual bucket values: 34.7
+1 steps: 1
+most likely bucket idx: 0, value: 34.7
+**************************************************************************
+
+    
+SdRClassifierTest.SDRClassifierTest.TestComputeDoubleIteration:
+    Outcome: Passed
+    Standard Output Messages:
+    learn: True
+recordNum 0:
+patternNZ 3: 1,5,9
+classificationIn: [{"Key":"bucketIdx","Value":[4]},{"Key":"actValue","Value":[34.7]}]
+inference: combined bucket likelihoods:
+actual bucket values: 34.7
+1 steps: 1
+most likely bucket idx: 0, value: 34.7
+learn: True
+recordNum 1:
+patternNZ 3: 1,5,9
+classificationIn: [{"Key":"bucketIdx","Value":[4]},{"Key":"actValue","Value":[34.7]}]
+inference: combined bucket likelihoods:
+actual bucket values: 34.7,34.7,34.7,34.7,34.7
+1 steps: 0.2,0.2,0.2,0.2,0.2
+most likely bucket idx: 0, value: 34.7
+
+    
+SdRClassifierTest.SDRClassifierTest.TestComputeMultipleEncoderPatterns:
+    Outcome: Passed
+    Standard Output Messages:
+    learn: True
+recordNum 0:
+patternNZ 3: 1,5,9
+classificationIn: [{"Key":"bucketIdx","Value":[4]},{"Key":"actValue","Value":[34.7]}]
+inference: combined bucket likelihoods:
+actual bucket values: 34.7
+1 steps: 1
+most likely bucket idx: 0, value: 34.7
+**************************************************************************
+learn: True
+recordNum 1:
+patternNZ 4: 0,6,9,11
+classificationIn: [{"Key":"bucketIdx","Value":[5]},{"Key":"actValue","Value":[41.7]}]
+inference: combined bucket likelihoods:
+actual bucket values: 41.7,41.7,41.7,41.7,34.7
+1 steps: 0.2,0.2,0.2,0.2,0.2
+most likely bucket idx: 0, value: 41.7
+**************************************************************************
+learn: True
+recordNum 2:
+patternNZ 2: 6,9
+classificationIn: [{"Key":"bucketIdx","Value":[5]},{"Key":"actValue","Value":[44.9]}]
+inference: combined bucket likelihoods:
+actual bucket values: 44.9,44.9,44.9,44.9,34.7,41.7
+1 steps: 0.12956251432964971,0.12956251432964971,0.12956251432964971,0.12956251432964971,0.12956251432964971,0.3521874283517515
+most likely bucket idx: 5, value: 41.7
+**************************************************************************
+learn: True
+recordNum 3:
+patternNZ 3: 1,5,9
+classificationIn: [{"Key":"bucketIdx","Value":[4]},{"Key":"actValue","Value":[42.9]}]
+inference: combined bucket likelihoods:
+actual bucket values: 42.9,42.9,42.9,42.9,34.7,42.02
+1 steps: 0.02053338371256194,0.02053338371256194,0.02053338371256194,0.02053338371256194,0.02053338371256194,0.8973330814371903
+most likely bucket idx: 5, value: 42.02
+**************************************************************************
+learn: True
+recordNum 4:
+patternNZ 3: 1,5,9
+classificationIn: [{"Key":"bucketIdx","Value":[4]},{"Key":"actValue","Value":[34.7]}]
+inference: combined bucket likelihoods:
+actual bucket values: 34.7,34.7,34.7,34.7,35.52,42.02
+1 steps: 0.03423426653265732,0.03423426653265732,0.03423426653265732,0.03423426653265732,0.09305838462634602,0.7700045492430246
+most likely bucket idx: 5, value: 42.02
+**************************************************************************
+
+    
+Total tests: 5. Passed: 5. Failed: 0. Skipped: 0
+
