@@ -6,6 +6,11 @@ namespace SDRClassifier
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
+    using Microsoft.VisualBasic;
+    using static System.Runtime.InteropServices.JavaScript.JSType;
+    using System.Net.Sockets;
+    using System.Reflection.Metadata;
+    using System.Reflection;
 
     public class SDRClassifier
     {
@@ -70,6 +75,28 @@ namespace SDRClassifier
             // This is used for serialization/deserialization
             this.version = version;
         }
+
+        /// <summary>
+        ///  Process one input sample.
+        ///  recordNum: Record number of this input pattern. Record numbers
+        ///             normally increase sequentially by 1 each time unless there are missing
+        ///             records in the dataset.Knowing this information insures that we don't get
+        ///             confused by missing records.
+        /// patternNZ: List of the active indices from the output below.When the
+        ///            input is from TemporalMemory, this list should be the indices of the active cells.
+        /// classification: Dict of the classification information where:
+        /// bucketIdx: list of indices of the encoder bucket
+        /// actValue: list of actual values going into the encoder
+        ///           Classification could be None for inference mode.
+        /// learn: (bool) if true, learn this sample
+        /// infer: (bool) if true, perform inference
+        /// return: Dict containing inference results, there is one entry for each
+        ///         step in self.steps, where the key is the number of steps, and
+        ///         the value is an array containing the relative likelihood for
+        ///         each bucketIdx starting from bucketIdx 0.
+        ///         There is also an entry containing the average actual value to
+        ///         use for each bucket. The key is 'actualValues'.
+        ///
 
         public Dictionary<string, double[]> Compute(
                 int recordNum,
