@@ -49,7 +49,7 @@ namespace SDRClassifier
             this.verbosity = verbosity;
             // Max # of steps of prediction we need to support
             this.maxSteps = this.steps.Max() + 1;
-            // History of the last _maxSteps activation patterns. We need to keep
+            // History of the last maxSteps activation patterns. We need to keep
             // these so that we can associate the current iteration's classification
             // with the activationPattern from N steps ago
             this.patternNZHistory = new();
@@ -91,7 +91,7 @@ namespace SDRClassifier
         /// learn: (bool) if true, learn this sample
         /// infer: (bool) if true, perform inference
         /// return: Dict containing inference results, there is one entry for each
-        ///         step in self.steps, where the key is the number of steps, and
+        ///         step in this.steps, where the key is the number of steps, and
         ///         the value is an array containing the relative likelihood for
         ///         each bucketIdx starting from bucketIdx 0.
         ///         There is also an entry containing the average actual value to
