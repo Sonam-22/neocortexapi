@@ -11,6 +11,7 @@ namespace SDRClassifier
     using System.Net.Sockets;
     using System.Reflection.Metadata;
     using System.Reflection;
+    using System.Reflection.Emit;
 
     public class SDRClassifier
     {
@@ -29,6 +30,13 @@ namespace SDRClassifier
 
         public SDRClassifier(List<int> steps, double alpha, double actValueAlpha, double verbosity, int version)
         {
+            ///
+            ///steps: (list) Sequence of the different steps of multi-step predictions to learn
+            ///alpha: (float)The alpha used to adapt the weight matrix during learning.A larger alpha results in faster adaptation to the data.
+            ///actValueAlpha: (float)Used to track the actual value within each bucket.A lower actValueAlpha results in longer term memory
+            ///verbosity: (int)verbosity level, can be 0, 1, or 2
+            ///
+
             if (steps.Count == 0)
             {
                 Console.WriteLine("steps cannot be empty");
