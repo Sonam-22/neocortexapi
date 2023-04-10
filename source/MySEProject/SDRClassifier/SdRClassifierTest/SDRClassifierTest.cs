@@ -2,6 +2,7 @@
 {
     using SDRClassifier;
     using NumSharp;
+    using System.Diagnostics;
 
     [TestClass]
     public class SDRClassifierTest
@@ -106,7 +107,7 @@
             classification.Add("bucketIdx", bucket);
             classification.Add("actValue", value);
             var retVal = classifier.Compute(recordNum, pattern, classification, true, true);
-            Console.WriteLine("**************************************************************************");
+            Debug.WriteLine("**************************************************************************");
             return retVal;
         }
     }
