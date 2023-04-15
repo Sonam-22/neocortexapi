@@ -38,7 +38,7 @@ An SDR classifier takes in a set of inputs and produces a binary output indicati
   patternNZ: List of the active indices from the output below. When the input is from TemporalMemory, this list should be the indices of the active cells.
   classification: Dict of the classification information
   
-    - Returns:
+   - Returns:
   Dict containing inference results, there is one entry for each step in self.steps, where the key is the number of steps, and the value is an array containing the relative likelihood for each bucketIdx starting from bucketIdx 0.
   
 - infer(patternNZ, actValueList)
@@ -52,7 +52,11 @@ An SDR classifier takes in a set of inputs and produces a binary output indicati
   
 - inferSingleStep(patternNZ, weightMatrix)
   : Perform inference for a single step. Given an SDR input and a weight matrix, return a predicted distribution.
-- static create(\*args, \*\*kwargs)
-  : Create a SDR classifier factory. The implementation of the SDR Classifier can be specified with the “implementation” keyword argument.
+  
+  - Parameters:	
+patternNZ – list of the active indices from the output below
+weightMatrix – numpy array of the weight matrix
+  - Returns:	
+numpy array of the predicted class label distribution
 
 
