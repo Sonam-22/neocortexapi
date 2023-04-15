@@ -33,12 +33,12 @@ An SDR classifier takes in a set of inputs and produces a binary output indicati
 - compute(recordNum, patternNZ, classification, learn, infer)
   : Process one input sample
   
- - Parameters:	
+ -- Parameters:	
   recordNum:Record number of this input pattern. Record numbers normally increase sequentially by 1 each time unless there are missing records in the dataset. Knowing this information insures that we don’t get confused by missing records.
   patternNZ: List of the active indices from the output below. When the input is from TemporalMemory, this list should be the indices of the active cells.
   classification: Dict of the classification information
   
-  - Returns:
+  -- Returns:
   Dict containing inference results, there is one entry for each step in self.steps, where the key is the number of steps, and the value is an array containing the relative likelihood for each bucketIdx starting from bucketIdx 0.
   
 - infer(patternNZ, actValueList)
