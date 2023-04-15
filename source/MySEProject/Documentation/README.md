@@ -32,6 +32,10 @@ An SDR classifier takes in a set of inputs and produces a binary output indicati
 
 - compute(recordNum, patternNZ, classification, learn, infer)
   : Process one input sample
+  Parameters:	
+  recordNum:Record number of this input pattern. Record numbers normally increase sequentially by 1 each time unless there are missing records in the dataset. Knowing this information insures that we don’t get confused by missing records.
+  patternNZ: List of the active indices from the output below. When the input is from TemporalMemory, this list should be the indices of the active cells.
+  classification: Dict of the classification information
 - infer(patternNZ, actValueList)
   : Return the inference value from one input sample.
 - inferSingleStep(patternNZ, weightMatrix)
@@ -39,11 +43,4 @@ An SDR classifier takes in a set of inputs and produces a binary output indicati
 - static create(\*args, \*\*kwargs)
   : Create a SDR classifier factory. The implementation of the SDR Classifier can be specified with the “implementation” keyword argument.
 
-**Project outline:**
-
-1. Finding input dataset and preprocessing and converting it to the format accepted by SDR classifier as input.
-2. implementing Learning function
-3. implementing Inference function
-4. Unit tests
-5. Training the model and enhancing the results by trying different parameter values.
 
