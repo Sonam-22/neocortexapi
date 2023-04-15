@@ -16,10 +16,6 @@ HTM systems follows the hierarchical structure of data processing and it usually
 
 The SDR classifier maps input patterns to class labels. There are as many output units as the number of class labels or buckets (in the case of scalar encoders). The output is a probabilistic distribution over all class labels. During inference, the output is calculated by first doing a weighted summation of all the inputs, and then perform a softmax nonlinear function to get the predicted distribution of class labels During learning, the connection weights between input units and output units are adjusted to maximize the likelihood of the model.
 
-## Refrences ##
-1.	M. I. Jordan and T. M. Mitchell, “Machine learning: Trends, Perspectives, and prospects,” Science, vol. 349, no. 6245, pp. 255–260, 2015. 
-2.	nupic.docs.numenta.org
-3.	Alex Graves. Supervised Sequence Labeling with Recurrent Neural Networks, PhD Thesis, 2008
 
 
 **Input:**
@@ -62,5 +58,10 @@ An SDR classifier takes in a set of inputs and produces a binary output indicati
     - weightMatrix: numpy array of the weight matrix
   - Returns:	
     - double[] of the predicted class label distribution
+
+## Refrences ##
+1.	M. I. Jordan and T. M. Mitchell, “Machine learning: Trends, Perspectives, and prospects,” Science, vol. 349, no. 6245, pp. 255–260, 2015. 
+2.	nupic.docs.numenta.org
+3.	Alex Graves. Supervised Sequence Labeling with Recurrent Neural Networks, PhD Thesis, 2008
 
 
