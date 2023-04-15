@@ -57,6 +57,6 @@ An SDR classifier takes in a set of inputs and produces a binary output indicati
     - patternNZ: list of the active indices from the output below
     - weightMatrix: numpy array of the weight matrix
   - Returns:	
-    - numpy array of the predicted class label distribution
+    - double[] of the predicted class label distribution
 
 
