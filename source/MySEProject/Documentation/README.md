@@ -1,4 +1,4 @@
-# **Implementation of a SDR classifier.**
+## Implementation of a SDR classifier.
 
 A classifier in machine learning is an algorithm that automatically orders or categorizes data into one or more set of “classes”. The SDR classifier takes the form of a single layer classification network that takes SDRs as input and outputs a predicted distribution of classes.The SDR Classifier accepts a binary input pattern from the level below (the "activationPattern" - the vector of Temporal Memory’s active cells) and information from the sensor and encoders (the "classification") describing the true (target) input.
 
@@ -16,13 +16,13 @@ HTM systems follows the hierarchical structure of data processing and it usually
 
 The SDR classifier maps input patterns to class labels. There are as many output units as the number of class labels or buckets (in the case of scalar encoders). The output is a probabilistic distribution over all class labels. During inference, the output is calculated by first doing a weighted summation of all the inputs, and then perform a softmax nonlinear function to get the predicted distribution of class labels During learning, the connection weights between input units and output units are adjusted to maximize the likelihood of the model.
 
-## **Input:**
+## Input:
 
 The input could be any type of data such as numerical or categorical data, text, or images. The data is first encoded by the encoder which transforms it into a sparse distributed representation.
 The encoded data is then fed into the spatial pooler which is responsible for selecting a subset of the active neurons in the encoded representation. The result is a sparse representation of the input data in which only a small subset of neurons are active.
 Finally, the sparse representation is fed into the temporal memory and the SDR Classifier takes as input a set of active cells from the Temporal Memory, which are represented as a vector. Additionally, the input to the SDR Classifier includes information about the record number and the bucket index that were used to encode the input data using the Encoder. Buckets are classes which represent a pattern in form of bits.
 
-## **Methods:**
+## Methods:
 
 - compute(recordNum, patternNZ, classification, learn, infer)
   : Process one input sample
@@ -59,3 +59,4 @@ Finally, the sparse representation is fed into the temporal memory and the SDR C
 1. M. I. Jordan and T. M. Mitchell, “Machine learning: Trends, Perspectives, and prospects,” Science, vol. 349, no. 6245, pp. 255–260, 2015.
 2. nupic.docs.numenta.org
 3. Alex Graves. Supervised Sequence Labeling with Recurrent Neural Networks, PhD Thesis, 2008
+4. SDR classifier, 10-Sep-2016. [Online]. Available: https://hopding.com/sdr-classifier#title. 
