@@ -16,48 +16,46 @@ HTM systems follows the hierarchical structure of data processing and it usually
 
 The SDR classifier maps input patterns to class labels. There are as many output units as the number of class labels or buckets (in the case of scalar encoders). The output is a probabilistic distribution over all class labels. During inference, the output is calculated by first doing a weighted summation of all the inputs, and then perform a softmax nonlinear function to get the predicted distribution of class labels During learning, the connection weights between input units and output units are adjusted to maximize the likelihood of the model.
 
+## **Input:**
 
-
-## **Input:** ##
 The input could be any type of data such as numerical or categorical data, text, or images. The data is first encoded by the encoder which transforms it into a sparse distributed representation.
-The encoded data is then fed into the spatial pooler which is responsible for selecting a subset of the active neurons in the encoded representation. The result is a sparse representation of the input data in which only a small subset of neurons are active. 
+The encoded data is then fed into the spatial pooler which is responsible for selecting a subset of the active neurons in the encoded representation. The result is a sparse representation of the input data in which only a small subset of neurons are active.
 Finally, the sparse representation is fed into the temporal memory and the SDR Classifier takes as input a set of active cells from the Temporal Memory, which are represented as a vector. Additionally, the input to the SDR Classifier includes information about the record number and the bucket index that were used to encode the input data using the Encoder. Buckets are classes which represent a pattern in form of bits.
 
-
-## **Methods:** ##
+## **Methods:**
 
 - compute(recordNum, patternNZ, classification, learn, infer)
   : Process one input sample
-  
-  - Parameters:	
+
+  - Parameters:
+
     - recordNum:Record number of this input pattern. Record numbers normally increase sequentially by 1 each time unless there are missing records in the dataset. Knowing this information insures that we don’t get confused by missing records.
     - patternNZ: List of the active indices from the output below. When the input is from TemporalMemory, this list should be the indices of the active cells.
       classification: Dict of the classification information
-  
-   - Returns:
-     - Dict containing inference results, there is one entry for each step in self.steps, where the key is the number of steps, and the value is an array containing the relative likelihood for each bucketIdx starting from bucketIdx 0.
-  
+
+  - Returns:
+    - Dict containing inference results, there is one entry for each step in self.steps, where the key is the number of steps, and the value is an array containing the relative likelihood for each bucketIdx starting from bucketIdx 0.
+
 - infer(patternNZ, actValueList)
   : Return the inference value from one input sample.
-  
-  - Parameters:	
+
+  - Parameters:
     - patternNZ: list of the active indices from the output below
     - classification: dict of the classification information: bucketIdx: index of the encoder bucket actValue: actual value going into the encoder
-  - Returns:	
+  - Returns:
     - dict containing inference results, one entry for each step in self.steps. The key is the number of steps, the value is an array containing the relative likelihood for each bucketIdx starting from bucketIdx 0.
-  
+
 - inferSingleStep(patternNZ, weightMatrix)
   : Perform inference for a single step. Given an SDR input and a weight matrix, return a predicted distribution.
-  
-  - Parameters:	
+
+  - Parameters:
     - patternNZ: list of the active indices from the output below
-    - weightMatrix: numpy array of the weight matrix
-  - Returns:	
+    - weightMatrix: numsharp array of the weight matrix
+  - Returns:
     - double[] of the predicted class label distribution
 
-## Refrences ##
-1.	M. I. Jordan and T. M. Mitchell, “Machine learning: Trends, Perspectives, and prospects,” Science, vol. 349, no. 6245, pp. 255–260, 2015. 
-2.	nupic.docs.numenta.org
-3.	Alex Graves. Supervised Sequence Labeling with Recurrent Neural Networks, PhD Thesis, 2008
+## Refrences
 
-
+1. M. I. Jordan and T. M. Mitchell, “Machine learning: Trends, Perspectives, and prospects,” Science, vol. 349, no. 6245, pp. 255–260, 2015.
+2. nupic.docs.numenta.org
+3. Alex Graves. Supervised Sequence Labeling with Recurrent Neural Networks, PhD Thesis, 2008
