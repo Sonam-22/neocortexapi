@@ -22,6 +22,14 @@ The input could be any type of data such as numerical or categorical data, text,
 The encoded data is then fed into the spatial pooler which is responsible for selecting a subset of the active neurons in the encoded representation. The result is a sparse representation of the input data in which only a small subset of neurons are active.
 Finally, the sparse representation is fed into the temporal memory and the SDR Classifier takes as input a set of active cells from the Temporal Memory, which are represented as a vector. Additionally, the input to the SDR Classifier includes information about the record number and the bucket index that were used to encode the input data using the Encoder. Buckets are classes which represent a pattern in form of bits.
 
+## classification:
+
+The SDR Classifier uses patterns to select buckets by encoding the input data as an SDR and using the SDR as the key to look up the appropriate bucket.
+The encoding process involves two steps: first, the input data is passed through an encoder that converts it into a sparse binary representation. This encoder can be configured in various ways, depending on the type of data being encoded. For example, if the input data is a scalar value, the encoder might use a scalar encoder that converts the value into a sparse binary representation with a fixed number of bits.
+The second step is to create an SDR from the encoded binary representation. The SDR is a binary vector with a fixed number of bits, where only a small percentage of the bits are set to 1. The bits that are set to 1 are chosen in a way that ensures that similar input values result in similar SDRs.
+Once the SDR has been created, it is used as the key to look up the appropriate bucket. The SDR Classifier maintains a set of buckets, where each bucket stores the state of the temporal memory for a particular pattern. When the SDR Classifier receives an input, it first encodes the input data and creates an SDR. It then uses the SDR to look up the appropriate bucket, and retrieves the state of the temporal memory stored in the bucket.
+The state of the temporal memory is then used to compute the anomaly score for the input. If the anomaly score exceeds a certain threshold, the SDR Classifier marks the input as anomalous and updates the state of the temporal memory in the bucket to reflect the new pattern. This allows the SDR Classifier to learn and adapt to new patterns over time.
+
 ## Methods:
 
 - compute(recordNum, patternNZ, classification, learn, infer)
