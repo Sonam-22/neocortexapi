@@ -42,7 +42,7 @@ The state of the temporal memory is then used to compute the anomaly score for t
       classification: Dict of the classification information
 
   - Returns:
-    - Dict containing inference results, there is one entry for each step in self.steps, where the key is the number of steps, and the value is an array containing the relative likelihood for each bucketIdx starting from bucketIdx 0.
+    - Dict containing inference results, there is one entry for each step in steps, where the key is the number of steps, and the value is an array containing the relative likelihood for each bucketIdx starting from bucketIdx 0.
 
 - infer(patternNZ, actValueList)
   : Return the inference value from one input sample.
@@ -51,7 +51,7 @@ The state of the temporal memory is then used to compute the anomaly score for t
     - patternNZ: list of the active indices from the output below
     - classification: dict of the classification information: bucketIdx: index of the encoder bucket actValue: actual value going into the encoder
   - Returns:
-    - dict containing inference results, one entry for each step in self.steps. The key is the number of steps, the value is an array containing the relative likelihood for each bucketIdx starting from bucketIdx 0.
+    - dict containing inference results, one entry for each step in steps. The key is the number of steps, the value is an array containing the relative likelihood for each bucketIdx starting from bucketIdx 0.
 
 - inferSingleStep(patternNZ, weightMatrix)
   : Perform inference for a single step. Given an SDR input and a weight matrix, return a predicted distribution.
@@ -62,9 +62,31 @@ The state of the temporal memory is then used to compute the anomaly score for t
   - Returns:
     - double[] of the predicted class label distribution
 
+## Tech Stack
+
+Microsoft .NET 7 Core
+
+[NumSharp](https://github.com/SciSharp/NumSharp)
+
+## Project Setup
+
+- Clone the [repository](https://github.com/wubie23/neocortexapi.git)
+- [Download](https://code.visualstudio.com/download) and Install Microsoft Visual Studio.
+- Install the Microsoft .NET 7 Core
+- Open the [Project](https://github.com/wubie23/neocortexapi/tree/team-lightening/source/MySEProject) in Visual Studio Code
+- Verify the results by executing test cases at [SdRClassifierTest](https://github.com/wubie23/neocortexapi/tree/team-lightening/source/MySEProject/SDRClassifier/SdRClassifierTest)
+
+## Documentation
+
+Detailed documentation about project and the SDR Classifier Algorithm is available at
+[SDR-Classifier.pdf](https://github.com/wubie23/neocortexapi/blob/team-lightening/source/MySEProject/Documentation/SDR-Classifier.pdf)
+
 ## Refrences
 
 1. M. I. Jordan and T. M. Mitchell, “Machine learning: Trends, Perspectives, and prospects,” Science, vol. 349, no. 6245, pp. 255–260, 2015.
 2. nupic.docs.numenta.org
 3. Alex Graves. Supervised Sequence Labeling with Recurrent Neural Networks, PhD Thesis, 2008
-4. SDR classifier, 10-Sep-2016. [Online]. Available: https://hopding.com/sdr-classifier#title. 
+4. SDR classifier, 10-Sep-2016. [Online]. Available: https://hopding.com/sdr-classifier#title.
+5. [Numenta SDR Classifier](https://github.com/numenta/nupic/blob/master/src/nupic/algorithms/sdr_classifier.py)
+6. [Numenta SDR Classifier tests](https://github.com/numenta/nupic/blob/master/tests/unit/nupic/algorithms/sdr_classifier_test.py)
+7. [Neocortex API](https://github.com/ddobric/neocortexapi)
