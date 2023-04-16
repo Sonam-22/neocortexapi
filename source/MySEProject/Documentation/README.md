@@ -70,7 +70,7 @@ Microsoft .NET 7 Core
 
 ## Project Setup
 
-- Clone the [repository](https://github.com/wubie23/neocortexapi.git) and switch to branch `team_lightning`.
+- Clone the [repository](https://github.com/wubie23/neocortexapi.git) and switch to branch `team_lightening`.
 - [Download](https://code.visualstudio.com/download) and Install Microsoft Visual Studio.
 - Install the Microsoft .NET 7 Core
 - Open the [Project](https://github.com/wubie23/neocortexapi/tree/team-lightening/source/MySEProject) in Visual Studio Code
