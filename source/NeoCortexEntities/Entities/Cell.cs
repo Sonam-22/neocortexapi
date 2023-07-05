@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -16,20 +18,15 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// If the cell has a meaning like a Grand-Mather cell, the meaning value is set.
         /// </summary>
-        public string Label { get; set; }
+        //public string Label { get; set; }
 
         /// <summary>
         /// Index of the cell.
         /// </summary>
         public int Index { get; set; }
-             
-        /// <summary>
-        /// The mini-column or cortical column, which owns this cell.
-        /// </summary>
-        public string ParentAreaName { get; set; }
 
         /// <summary>
-        /// Optional. The mini-column, which owns this cell.
+        /// The mini-column index or the area identifier, which owns this cell.
         /// A cell can be owned by area explicitely if mini-columns are not used.
         /// </summary>
         public int ParentColumnIndex { get; set; }
@@ -61,14 +58,14 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Cell()
         {
-
+            this.ParentColumnIndex = -1;
         }
 
         /// <summary>
         /// Constructs a new <see cref="Cell"/> object
         /// </summary>
         /// <param name="parentColumnIndx"></param>
-        /// <param name="colSeq">the index of this <see cref="Cell"/> within its column</param>
+        /// <param name="colSeq">The index of this <see cref="Cell"/> within its column.</param>
         /// <param name="numCellsPerColumn"></param>
         /// <param name="cellId"></param>
         /// <param name="cellActivity"></param>
@@ -77,11 +74,21 @@ namespace NeoCortexApi.Entities
             this.ParentColumnIndex = parentColumnIndx;
 
             this.Index = parentColumnIndx * numCellsPerColumn + colSeq;
-
-            //this.CellId = cellId;
         }
 
-      
+
+        /// <summary>
+        /// Creates the cell
+        /// </summary>
+        /// <param name="parentIndex">The index of the area that owns the cell. This can be a mini-column or a <see cref="CorticalArea"/></param>
+        /// <param name="index">The index of the cell inside the given area.</param>
+        public Cell(int parentIndex, int index)
+        {
+            this.ParentColumnIndex = parentIndex;
+
+            this.Index = index;
+        }
+
         /// <summary>
         /// Gets the hashcode of the cell.
         /// </summary>
@@ -92,8 +99,9 @@ namespace NeoCortexApi.Entities
             int result = 1;
             result = prime * result + ParentColumnIndex;
             result = prime * result + Index;
+            result = result * ParentColumnIndex;
 
-            return result;        
+            return result;
         }
 
         /// <summary>
@@ -142,9 +150,30 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public override string ToString()
         {
-            return $"Cell: Indx={this.Index}, [{this.ParentColumnIndex}]";
+            return $"Parent={this.ParentColumnIndex} - Index={this.Index}";
         }
 
+
+
+        /// <summary>
+        /// Trace dendrites and synapses.
+        /// </summary>
+        /// <returns></returns>
+        public string TraceCell()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append($"Cell {this.Index} ");
+
+            sb.AppendLine($"\tApical Segments {this.ApicalDendrites.Count}");
+
+            foreach (var seg in this.ApicalDendrites)
+            {
+                sb.AppendLine(seg.ToString());
+            }
+            
+            return sb.ToString();
+        }
 
         /// <summary>
         /// Compares two cells.
@@ -245,8 +274,8 @@ namespace NeoCortexApi.Entities
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var ignoreMembers = new List<string> 
-            { 
+            var ignoreMembers = new List<string>
+            {
                 nameof(Cell.ReceptorSynapses),
                 nameof(m_Hashcode)
             };
@@ -270,6 +299,8 @@ namespace NeoCortexApi.Entities
             //}
             return cell;
         }
+
+      
         #endregion
     }
 }

@@ -16,6 +16,8 @@ namespace NeoCortexApi.Entities
     /// </summary>
     public class HtmConfig : ISerializable
     {
+        public static readonly double EPSILON = 0.00001;
+
         /// <summary>
         /// Default constructor with the default set of parameters.
         /// </summary>
@@ -121,6 +123,13 @@ namespace NeoCortexApi.Entities
         /// a "connected synapse", meaning it can contribute to the cell's firing.
         /// </summary>
         public double SynPermConnected { get => synPermConnected; set { synPermConnected = value; SynPermBelowStimulusInc = value / 10.0; } }
+
+        /// <summary>
+        /// If the permanence value for a synapse is greater than this value, it is said to be connected = the potential synapse.
+        /// Synapses that exceeds this value are used in computation of active segments.
+        /// </summary>
+        [Obsolete("Use SynPermConnected instead.")]
+        public double ConnectedPermanence { get; set; } = 0.5;
 
         /// <summary>
         /// Specifies whether neighborhoods wider than the borders wrap around to the other side.
@@ -301,12 +310,16 @@ namespace NeoCortexApi.Entities
         public int MaxSynapsesPerSegment { get; set; }
 
         /// <summary>
-        /// Amount by which permanences of synapses are incremented during learning.
+        /// Amount by which permanences of synapses are incremented during learning.This value is related to AMPA.
+        /// AMPA (α-amino-3-hydroxy-5-methyl-4-isoxazolepropionic acid) receptors are a type of 
+        /// ionotropic glutamate receptor that plays a key role in both long-term potentiation (LTP) 
+        /// and short-term potentiation (STP) at excitatory synapses in the brain.
         /// </summary>
         public double PermanenceIncrement { get; set; }
 
         /// <summary>
         /// Amount by which permanences of synapses are decremented during learning.
+        /// <seealso cref="PermanenceIncrement"/>
         /// </summary>
         public double PermanenceDecrement { get; set; }
 
@@ -341,12 +354,6 @@ namespace NeoCortexApi.Entities
         /// Initial permanence of a new synapse
         /// </summary>
         public double InitialPermanence { get; set; } = 0.21;
-
-        /// <summary>
-        /// If the permanence value for a synapse is greater than this value, it is said to be connected = the potential synapse.
-        /// Synapses that exceeds this value are used in computation of active segments.
-        /// </summary>
-        public double ConnectedPermanence { get; set; } = 0.5;
 
         //public bool Learn { get; set; } = true;
         #endregion
