@@ -1,13 +1,12 @@
 ﻿using NeoCortexApi;
-using NeoCortexApi.Classifiers;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
-using Org.BouncyCastle.Asn1.Tsp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using SDRClassifier;
 
 
 namespace NeoCortexApiSample
@@ -88,7 +87,7 @@ namespace NeoCortexApiSample
 
             bool isInStableState = false;
 
-            HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
+            SDRClassifier<string, ComputeCycle> cls = new SDRClassifier<string, ComputeCycle>(new List<int>() { 1 }, 0.001, 0.3, 3, 1);
 
             var numUniqueInputs = GetNumberOfInputs(sequences);
 
@@ -165,8 +164,6 @@ namespace NeoCortexApiSample
                 }
             }
 
-            // Clear all learned patterns in the classifier.
-            cls.ClearState();
 
             // We activate here the Temporal Memory algorithm.
             layer1.HtmModules.Add("tm", tm);
@@ -251,7 +248,11 @@ namespace NeoCortexApiSample
                         if (lyrOut.PredictiveCells.Count > 0)
                         {
                             //var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
-                            var predictedInputValues = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3);
+                            var indices = lyrOut
+                                .PredictiveCells
+                                .Select(c => c.Index)
+                                .ToArray();
+                            var predictedInputValues = cls.GetPredictedInputValues(indices, 3);
 
                             foreach (var item in predictedInputValues)
                             {

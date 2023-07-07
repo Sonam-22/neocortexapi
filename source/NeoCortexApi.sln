@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi", "NeoCortexApi\NeoCortexApi.csproj", "{F5BEDB25-C6A3-4826-A8C6-679098F5CB9C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTestsProject", "UnitTestsProject\UnitTestsProject.csproj", "{A2B0776F-3650-4CE5-98BC-E2B7A2205A23}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestsProject", "UnitTestsProject\UnitTestsProject.csproj", "{A2B0776F-3650-4CE5-98BC-E2B7A2205A23}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexUtils", "NeoCortexUtils\NeoCortexUtils.csproj", "{28395BF8-B719-4D93-806B-723A7AF0C56A}"
 EndProject
@@ -52,6 +52,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{9475B9AE
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridCell", "GridCell\GridCell.csproj", "{E102D57D-BA8F-4E21-8365-8ABAFB5D2C94}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDRClassifier", "MySEProject\SDRClassifier\SDRClassifier\SDRClassifier.csproj", "{A5622CEE-6F28-4D02-A17F-ABC584B86A3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SdRClassifierTest", "MySEProject\SDRClassifier\SdRClassifierTest\SdRClassifierTest.csproj", "{363C9D57-5A8E-4235-AE82-2094BD14DFA1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCloudProject", "MyCloudProjectSample\MyCloudProject\MyCloudProject.csproj", "{1A5C9ABE-7880-4C1B-99F9-2F3BD7CD9FCC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCloudProject.Common", "MyCloudProjectSample\MyCloudProject.Common\MyCloudProject.Common.csproj", "{800B407E-E4C4-42D3-ABF2-44E7E927C325}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyExperiment", "MyCloudProjectSample\MyExperiment\MyExperiment.csproj", "{37693DC3-71DE-4BF6-82E4-940F64086289}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +121,26 @@ Global
 		{E102D57D-BA8F-4E21-8365-8ABAFB5D2C94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E102D57D-BA8F-4E21-8365-8ABAFB5D2C94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E102D57D-BA8F-4E21-8365-8ABAFB5D2C94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5622CEE-6F28-4D02-A17F-ABC584B86A3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5622CEE-6F28-4D02-A17F-ABC584B86A3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5622CEE-6F28-4D02-A17F-ABC584B86A3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5622CEE-6F28-4D02-A17F-ABC584B86A3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{363C9D57-5A8E-4235-AE82-2094BD14DFA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{363C9D57-5A8E-4235-AE82-2094BD14DFA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{363C9D57-5A8E-4235-AE82-2094BD14DFA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{363C9D57-5A8E-4235-AE82-2094BD14DFA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A5C9ABE-7880-4C1B-99F9-2F3BD7CD9FCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A5C9ABE-7880-4C1B-99F9-2F3BD7CD9FCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A5C9ABE-7880-4C1B-99F9-2F3BD7CD9FCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A5C9ABE-7880-4C1B-99F9-2F3BD7CD9FCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{800B407E-E4C4-42D3-ABF2-44E7E927C325}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{800B407E-E4C4-42D3-ABF2-44E7E927C325}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{800B407E-E4C4-42D3-ABF2-44E7E927C325}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{800B407E-E4C4-42D3-ABF2-44E7E927C325}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37693DC3-71DE-4BF6-82E4-940F64086289}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37693DC3-71DE-4BF6-82E4-940F64086289}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37693DC3-71DE-4BF6-82E4-940F64086289}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37693DC3-71DE-4BF6-82E4-940F64086289}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
