@@ -6,6 +6,8 @@ namespace SDRClassifier
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using NeoCortexApi.Classifiers;
+    using NeoCortexApi.Entities;
 
     /// <summary>
     /// The SDR Classifier accepts a binary input pattern from the
@@ -21,7 +23,7 @@ namespace SDRClassifier
     /// During learning, the connection weights between input units and output units
     /// are adjusted to maximize the likelihood of the model
     /// </summary>
-    public class SDRClassifier
+    public class SDRClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
 
         public int version = 1;
@@ -213,11 +215,26 @@ namespace SDRClassifier
             }
 
             // Verbose print
-            if (infer && this.verbosity >= 1)
+            if (infer && verbosity >= 1)
             {
                 PrintVerbose(retval);
             }
             return retval;
+        }
+
+        public TIN GetPredictedInputValue(Cell[] predictiveCells)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Learn(TIN input, Cell[] output)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ClassifierResult<TIN>> GetPredictedInputValues(int[] cellIndicies, short howMany = 1)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -410,6 +427,7 @@ namespace SDRClassifier
             }
             return error;
         }
+
     }
 
 }
