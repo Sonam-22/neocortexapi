@@ -1,10 +1,7 @@
 ﻿using NeoCortexApi;
-using NeoCortexApi.Encoders;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using static NeoCortexApiSample.MultiSequenceLearning;
 
 namespace NeoCortexApiSample
 {
@@ -31,8 +28,10 @@ namespace NeoCortexApiSample
             //GridCellSamples gridCells = new GridCellSamples();
             //gridCells.Run();
 
-           // RunMultiSimpleSequenceLearningExperiment();
-           RunMultiSequenceLearningExperiment();
+            // RunMultiSimpleSequenceLearningExperiment();
+
+
+            RunMultiSequenceLearningExperiment();
         }
 
         private static void RunMultiSimpleSequenceLearningExperiment()

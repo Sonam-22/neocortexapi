@@ -11,7 +11,7 @@
         [TestMethod]
         public void TestSingleBucketValue()
         {
-            var classifier = new SDRClassifier(new List<int>() { 1 }, 0.001, 0.3, 3, 1);
+            var classifier = new SDRClassifier<double, double>(new List<int>() { 1 }, 0.001, 0.3, 3, 1);
 
             // Enough times to perform Inference and expect high likelihood for prediction.
             Dictionary<string, double[]> retVal = new();
@@ -26,7 +26,7 @@
         [TestMethod]
         public void TestMultipleBucketValues()
         {
-            var classifier = new SDRClassifier(new List<int>() { 1 }, 0.001, 0.3, 3, 2);
+            var classifier = new SDRClassifier<double, double>(new List<int>() { 1 }, 0.001, 0.3, 3, 2);
 
             // Enough times to perform Inference and expect high likelihood for prediction.
             Dictionary<string, double[]> retVal = new();
@@ -44,7 +44,7 @@
         [TestMethod]
         public void TestComputeSingleIteration()
         {
-            var classifier = new SDRClassifier(new List<int>() { 1 }, 0.001, 0.3, 3, 3);
+            var classifier = new SDRClassifier<double, double>(new List<int>() { 1 }, 0.001, 0.3, 3, 3);
             int recordNum = 0;
 
             Dictionary<string, double[]> result = compute(classifier, recordNum, new List<int> { 1, 5, 9 }, new double[] { 4 }, new double[] { 34.7 });
@@ -56,7 +56,7 @@
         [TestMethod]
         public void TestComputeDoubleIteration()
         {
-            var classifier = new SDRClassifier(new List<int>() { 1 }, 0.001, 0.3, 3, 3);
+            var classifier = new SDRClassifier<double, double>(new List<int>() { 1 }, 0.001, 0.3, 3, 3);
             int recordNum = 0;
             Dictionary<string, double[]> classification = new();
             classification.Add("bucketIdx", new double[] { 4 });
@@ -70,7 +70,7 @@
         [TestMethod]
         public void TestComputeMultipleEncoderPatterns()
         {
-            var classifier = new SDRClassifier(new List<int>() { 1 }, 1.0, 0.1, 3, 1);
+            var classifier = new SDRClassifier<double, double>(new List<int>() { 1 }, 1.0, 0.1, 3, 1);
             int recordNum = 0;
 
             compute(classifier, recordNum++, new List<int> { 1, 5, 9 }, new double[] { 4 }, new double[] { 34.7 });
@@ -96,7 +96,7 @@
         }
 
 
-        private Dictionary<string, double[]> compute(SDRClassifier classifier,
+        private Dictionary<string, double[]> compute(SDRClassifier<double, double> classifier,
                                                  int recordNum,
                                                  List<int> pattern,
                                                  double[] bucket,
