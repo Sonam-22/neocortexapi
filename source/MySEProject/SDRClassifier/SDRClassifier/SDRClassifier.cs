@@ -1,13 +1,12 @@
+using static System.Text.Json.JsonSerializer;
+using NumSharp;
+using System.Diagnostics;
+using NeoCortexApi.Classifiers;
+using NeoCortexApi.Entities;
+using System.Numerics;
+
 namespace SDRClassifier
 {
-    using static System.Text.Json.JsonSerializer;
-    using NumSharp;
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
-    using NeoCortexApi.Classifiers;
-    using NeoCortexApi.Entities;
 
     /// <summary>
     /// The SDR Classifier accepts a binary input pattern from the
@@ -25,7 +24,7 @@ namespace SDRClassifier
     /// </summary>
     public class SDRClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
-
+      
         public int version = 1;
         public List<int> steps;
         public double alpha;
@@ -36,13 +35,15 @@ namespace SDRClassifier
         private int maxInputIdx;
         private int maxBucketIdx;
         private Dictionary<int, NDArray> weightMatrix = new();
+
+     
         ///
         ///steps: (list) 
         ///alpha: 
         ///actValueAlpha: (float)
         ///verbosity: (int)
         ///
-        private List<double?> actualValues;
+        private List<object?> actualValues;
 
         /// <summary>
         /// SDR classifier default constructor
@@ -95,7 +96,7 @@ namespace SDRClassifier
             // This keeps track of the actual value to use for each bucket index. We
             // start with 1 bucket, no actual value so that the first infer has something
             // to return
-            this.actualValues = new List<double?> { null };
+            this.actualValues = new List<object?> { null };
             // Set the version to the latest version.
             // This is used for serialization/deserialization
             this.version = version;
@@ -140,23 +141,23 @@ namespace SDRClassifier
         /// <exception cref="InvalidDataException">
         ///  Throws invalid data exception when record number increases randomly or classification is null and learn is true.
         /// </exception>
-        public Dictionary<string, double[]> Compute(
+        public SDRClassification<TIN> Compute(
                 int recordNum,
                 List<int> patternNZ,
-                Dictionary<string, double[]> classification,
+                SDRClassification<TIN> classification,
                 bool learn,
                 bool infer)
         {
             int numCategory = 0;
-            double[] actValueList = new double[1];
-            double[] bucketIdxList = new double[1];
+            var actValueList = Array.Empty<TIN>();
+            var bucketIdxList = Array.Empty<double>();
 
             if (this.verbosity >= 1)
             {
                 Debug.WriteLine(String.Format("learn: {0}", learn));
                 Debug.WriteLine(String.Format("recordNum {0}:", recordNum));
                 Debug.WriteLine(String.Format("patternNZ {0}: {1}", patternNZ.Count, string.Join(",", patternNZ.ToArray())));
-                Debug.WriteLine(String.Format("classificationIn: {0}", Serialize(classification.ToList())));
+                Debug.WriteLine(String.Format("classificationIn: {0}", Serialize(classification)));
             }
             // ensures that recordNum increases monotonically
             if (this.patternNZHistory.Count > 0)
@@ -175,23 +176,23 @@ namespace SDRClassifier
             // To allow multi-class classification, we need to be able to run learning
             // without inference being on. So initialize retval outside
             // of the inference block.
-            var retval = new Dictionary<string, double[]>();
+            var retval = new SDRClassification<TIN>();
             // Update maxInputIdx and augment weight matrix with zero padding
             if (patternNZ.Max() > this.maxInputIdx)
             {
                 var newMaxInputIdx = patternNZ.Max();
                 foreach (var step in this.steps)
                 {
-                    this.weightMatrix[step] = np.concatenate(((NDArray, NDArray))(this.weightMatrix[step], np.zeros(shape: (newMaxInputIdx - this.maxInputIdx, this.maxBucketIdx + 1))), axis: 0);
+                    this.weightMatrix[step] = np.concatenate((this.weightMatrix[step], np.zeros(shape: (newMaxInputIdx - this.maxInputIdx, this.maxBucketIdx + 1))), axis: 0);
                 }
                 this.maxInputIdx = Convert.ToInt32(newMaxInputIdx);
             }
             // Get classification info
             if (classification is not null)
             {
-                bucketIdxList = classification["bucketIdx"];
-                actValueList = classification["actValue"];
-                numCategory = classification["bucketIdx"].Length;
+                bucketIdxList = classification.Classifications["bucketIdx"];
+                actValueList = classification.ActValues;
+                numCategory = classification.Classifications["bucketIdx"].Length;
             }
             else
             {
@@ -209,16 +210,11 @@ namespace SDRClassifier
                 retval = Infer(patternNZ, actValueList);
             }
 
-            if (learn && classification != null && classification["bucketIdx"] != null)
+            if (learn && classification != null && classification.Classifications["bucketIdx"] != null)
             {
                 UpdateWeightMatrix(bucketIdxList, actValueList, numCategory, recordNum);
             }
 
-            // Verbose print
-            if (infer && verbosity >= 1)
-            {
-                PrintVerbose(retval);
-            }
             return retval;
         }
 
@@ -232,9 +228,62 @@ namespace SDRClassifier
             throw new NotImplementedException();
         }
 
+        public void Learn(TIN input, Cell[] output, object optionalInfo)
+        {
+            var cellIndicies = output
+                .Select(v => v.Index)
+                .ToList();
+            var optionals = (SDRClassifierInput<TIN>) optionalInfo;
+            SDRClassification<TIN> classification = new()
+            {
+                Classifications = new Dictionary<string, double[]>() {{"bucketIdx",  optionals.BucketIndex}},
+                ActValues = optionals.ActValues
+            };
+
+            Compute(optionals.RecordNumber, cellIndicies, classification, true, false);
+        }
+
         public List<ClassifierResult<TIN>> GetPredictedInputValues(int[] cellIndicies, short howMany = 1)
         {
-            throw new NotImplementedException();
+            var inferredValues = Infer(cellIndicies.ToList(), null);
+            return ToClassficationResults(inferredValues, howMany);
+        }
+
+        public List<ClassifierResult<TIN>> GetPredictedInputValues(int[] cellIndicies, short howMany, object optionalInfo)
+        {
+            var optionals = (SDRClassifierInput<TIN>)optionalInfo;
+            SDRClassification<TIN> classification = new()
+            {
+                Classifications = new Dictionary<string, double[]>() { { "bucketIdx", optionals.BucketIndex } },
+                ActValues = optionals.ActValues
+            };
+            var inferredValues = Compute(optionals.RecordNumber, cellIndicies.ToList(), classification, false, true);
+            return ToClassficationResults(inferredValues, howMany);
+        }
+
+        private List<ClassifierResult<TIN>> ToClassficationResults(SDRClassification<TIN> inferredValues, short howMany = 1) {
+            var firstStep = inferredValues.Classifications[steps[0].ToString()];
+            var sorted = np.array(firstStep)
+                .argsort<int>()["::-1"]
+                .ToArray<int>();
+
+            var classificationResults = new List<ClassifierResult<TIN>>();
+
+            for (int i = 0; i < sorted.Length; i++)
+            {
+                var idx = sorted[i];
+                var probablity = firstStep[idx] * 100;
+                var actValue = inferredValues.ActValues[idx];
+                classificationResults.Add(new ClassifierResult<TIN>()
+                {
+                    PredictedInput = actValue,
+                    Similarity = probablity
+                });
+            }
+
+            return classificationResults
+                .Take(howMany)
+                .ToList();
         }
 
         /// <summary>
@@ -244,7 +293,7 @@ namespace SDRClassifier
         /// <param name="actValueList">Array of actual values</param>
         /// <param name="numCategory">Category</param>
         /// <param name="recordNum">Record number for the pattern</param>
-        private void UpdateWeightMatrix(double[] bucketIdxList, double[] actValueList, int numCategory, int recordNum)
+        private void UpdateWeightMatrix(double[] bucketIdxList, TIN[] actValueList, int numCategory, int recordNum)
         {
             foreach (int categoryI in Enumerable.Range(0, numCategory))
             {
@@ -255,7 +304,7 @@ namespace SDRClassifier
                 {
                     foreach (int step in this.steps)
                     {
-                        var toUpdate = ((NDArray, NDArray))(this.weightMatrix[step], np.zeros(shape: (maxInputIdx + 1, bucketIdx - maxBucketIdx)));
+                        var toUpdate = (this.weightMatrix[step], np.zeros(shape: (maxInputIdx + 1, bucketIdx - maxBucketIdx)));
                         this.weightMatrix[step] = np.concatenate(toUpdate, axis: 1);
                     }
                     this.maxBucketIdx = Convert.ToInt32(bucketIdx);
@@ -273,7 +322,16 @@ namespace SDRClassifier
                 }
                 else
                 {
-                    this.actualValues[bucketIdx] = (1.0 - this.actValueAlpha) * (this.actualValues[bucketIdx]) + this.actValueAlpha * actValue;
+                    if(IsNumeric(actValue)) {
+                        var actValueDouble = Convert.ToDouble(actValue);
+                        var actualValueDouble = Convert.ToDouble(this.actualValues[bucketIdx]);
+                        this.actualValues[bucketIdx] = (TIN)(object)((1.0 - this.actValueAlpha) * (actualValueDouble) + this.actValueAlpha * actValueDouble);
+                    }
+                    else
+                    {
+                        this.actualValues[bucketIdx] = actValue;
+                    }
+                   
                 }
             }
             foreach (var tuple in this.patternNZHistory)
@@ -296,11 +354,11 @@ namespace SDRClassifier
         /// Prints the classification information.
         /// </summary>
         /// <param name="retval">Dictionary of classification information</param>
-        private void PrintVerbose(Dictionary<string, double[]> retval)
+        private void PrintVerbose(SDRClassification<TIN> retVal)
         {
             Debug.WriteLine("inference: combined bucket likelihoods:");
-            Debug.WriteLine(String.Format("actual bucket values {0}", string.Join(",", retval["actualValues"])));
-            foreach (var keyValue in retval)
+            Debug.WriteLine(String.Format("actual bucket values {0}", string.Join(",", retVal.ActValues)));
+            foreach (var keyValue in retVal.Classifications)
             {
                 var nSteps = keyValue.Key;
                 var votes = keyValue.Value;
@@ -309,10 +367,11 @@ namespace SDRClassifier
                     continue;
                 }
                 Debug.WriteLine(String.Format("{0} steps: {1}", nSteps, string.Join(",", votes)));
-                var bestBucketIdx = np.array((double[])votes).argmax();
-                Debug.WriteLine(String.Format("most likely bucket idx: {0}, value: {1}", bestBucketIdx, retval["actualValues"][bestBucketIdx]));
+                var bestBucketIdx = np.array(votes).argmax();
+                Debug.WriteLine(String.Format("most likely bucket idx: {0}, value: {1}", bestBucketIdx, retVal.ActValues[bestBucketIdx]));
             }
         }
+
 
         /// <summary>
         /// Return the inference value from one input sample. The actual
@@ -328,9 +387,9 @@ namespace SDRClassifier
         /// array containing the relative likelihood for each bucketIdx
         /// starting from bucketIdx 0.
         /// </returns>
-        public Dictionary<string, double[]> Infer(List<int> patternNZ, double[]? actValueList)
+        public SDRClassification<TIN> Infer(List<int> patternNZ, TIN[]? actValueList)
         {
-            double defaultValue = 0.0;
+            TIN? defaultValue;
             /**
              * Return value dict. For buckets which we don't have an actual value
              * for yet, just plug in any valid actual value. It doesn't matter what
@@ -340,19 +399,23 @@ namespace SDRClassifier
             */
             if (this.steps[0] == 0 || actValueList == null)
             {
-                defaultValue = 0.0;
+                defaultValue = default;
             }
             else
             {
                 defaultValue = actValueList[0];
             }
             var actValues = this.actualValues
-              .ConvertAll<double>(item => item ?? defaultValue)
+              .ConvertAll(item => (TIN)(item ?? defaultValue))
               .ToArray();
-            var retval = new Dictionary<string, double[]> { { "actualValues", actValues } };
+            var retval = new SDRClassification<TIN>();
+            retval.ActValues = actValues;
             foreach (var nSteps in this.steps)
             {
-                retval[nSteps.ToString()] = InferSingleStep(patternNZ, this.weightMatrix[nSteps]);
+                retval.Classifications[nSteps.ToString()] = InferSingleStep(patternNZ, this.weightMatrix[nSteps]);
+            }
+            if(verbosity >= 1) {
+                PrintVerbose(retval);
             }
             return retval;
         }
@@ -421,11 +484,37 @@ namespace SDRClassifier
                 if (this.steps.Contains(nSteps))
                 {
                     var inferred = InferSingleStep(learnPatternNZ, this.weightMatrix[nSteps]);
-                    var predictDist = np.array<double>(inferred);
+                    var predictDist = np.array(inferred);
                     error[nSteps] = targetDist - predictDist;
                 }
             }
             return error;
+        }
+
+        public static bool IsNumeric(object? value)
+        {
+            return (value is Byte ||
+                    value is Int16 ||
+                    value is Int32 ||
+                    value is Int64 ||
+                    value is SByte ||
+                    value is UInt16 ||
+                    value is UInt32 ||
+                    value is UInt64 ||
+                    value is BigInteger ||
+                    value is Decimal ||
+                    value is Double ||
+                    value is Single);
+        }
+
+        /// <summary>
+        /// Clears the elearned state.
+        /// </summary>
+        public void ClearState()
+        {
+            patternNZHistory.Clear();
+            weightMatrix.Clear();
+            actualValues.Clear();
         }
 
     }
