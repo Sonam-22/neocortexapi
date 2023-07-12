@@ -19,6 +19,12 @@ namespace MyCloudProject
 
         static async Task Main(string[] args)
         {
+            MultisequenceLearningExecutor.RunMultiSequenceLearningExperiment();
+           //await StartExpermient();
+        }
+
+
+        static async Task StartExpermient(string[] args) {
             CancellationTokenSource tokeSrc = new CancellationTokenSource();
 
             Console.CancelKeyPress += (sender, e) =>
@@ -43,12 +49,11 @@ namespace MyCloudProject
             IStorageProvider storageProvider = new AzureStorageProvider(cfgSec);
 
             Experiment experiment = new Experiment(cfgSec, storageProvider, logger/* put some additional config here */);
-            
+
             await experiment.RunQueueListener(tokeSrc.Token);
 
             logger?.LogInformation($"{DateTime.Now} -  Experiment exit: {projectName}");
         }
-
 
     }
 }

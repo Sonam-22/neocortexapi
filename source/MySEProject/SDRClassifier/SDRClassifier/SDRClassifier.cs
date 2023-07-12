@@ -237,7 +237,7 @@ namespace SDRClassifier
             SDRClassification<TIN> classification = new()
             {
                 Classifications = new Dictionary<string, double[]>() {{"bucketIdx",  optionals.BucketIndex}},
-                ActValues = optionals.ActValues
+                ActValues = new TIN[] { input }
             };
 
             Compute(optionals.RecordNumber, cellIndicies, classification, true, false);
