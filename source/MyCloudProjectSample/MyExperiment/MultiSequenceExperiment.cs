@@ -81,7 +81,7 @@ namespace MyExperiment
 
             int maxMatchCnt = 0;
 
-            int step = 1;
+            int step = 0;
 
             var mem = new Connections(cfg);
 
@@ -213,11 +213,6 @@ namespace MyExperiment
                         if (previousInputs.Count > (maxPrevInputs + 1))
                             previousInputs.RemoveAt(0);
 
-                        // In the pretrained SP with HPC, the TM will quickly learn cells for patterns
-                        // In that case the starting sequence 4-5-6 might have the sam SDR as 1-2-3-4-5-6,
-                        // Which will result in returning of 4-5-6 instead of 1-2-3-4-5-6.
-                        // HtmClassifier allways return the first matching sequence. Because 4-5-6 will be as first
-                        // memorized, it will match as the first one.
                         if (previousInputs.Count < maxPrevInputs)
                             continue;
 
@@ -244,6 +239,7 @@ namespace MyExperiment
                             actCells = lyrOut.WinnerCells;
                         }
 
+                        //Creates required sdr classifier inputs
                         var learnInfo = new SDRClassifierInput<string>
                         {
                             BucketIndex = new double[] { bucketIndex },
@@ -264,15 +260,16 @@ namespace MyExperiment
                             Debug.WriteLine($"Match. Actual value: {key} - Predicted value: {lastPredictedValues.FirstOrDefault(key)}.");
                         }
                         else
+                        {
                             Debug.WriteLine($"Missmatch! Actual value: {key} - Predicted values: {String.Join(',', lastPredictedValues)}");
-
+                        }
+                            
                         if (lyrOut.PredictiveCells.Count > 0)
                         {
-                            //var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
-                            var indices = lyrOut
-                                .PredictiveCells
-                                .Select(c => c.Index)
-                                .ToArray();
+                         
+                            var indices = ToIndices((List<Cell>)lyrOut.PredictiveCells);
+                                
+                            //Creates required sdr classifier inputs for prediction
                             var predictInfo = new SDRClassifierInput<string>
                             {
                                 ActValues = new string[] { key },
@@ -334,6 +331,13 @@ namespace MyExperiment
             Debug.WriteLine("------------ END ------------");
 
             return new Predictor(layer1, mem, cls);
+        }
+
+        private int[] ToIndices(List<Cell> cells)
+        {
+            return cells
+                 .Select(c => c.Index)
+                 .ToArray();
         }
 
 
