@@ -1,10 +1,12 @@
 ﻿using Azure;
 using Azure.Data.Tables;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Configuration;
 using MyCloudProject.Common;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,17 +24,40 @@ namespace MyExperiment
 
         public async Task<string> DownloadInputFile(string fileName)
         {
-            BlobContainerClient container = new BlobContainerClient("read from config", "sample-container TODO. Read from config");
+            BlobContainerClient(this.config.StorageConnectionString, "inputcontainer");
             await container.CreateIfNotExistsAsync();
 
             // Get a reference to a blob named "sample-file"
-            BlobClient blob = container.GetBlobClient(fileName);
+            // BlobClient blob = container.GetBlobClient(fileName);
+            try
+             {
+
+                 // Get a reference to a blob named "sample-file"
+                 BlobClient blob = container.GetBlobClient(fileName);
 
             //throw if not exists:
             //blob.ExistsAsync
 
             // return "../myinputfilexy.csv"
-            throw new NotImplementedException();
+           
+            // Download the blob's contents and save it to a file
+             BlobDownloadInfo download = await blob.DownloadAsync();
+
+             using (FileStream file = File.OpenWrite(fileName))
+             {
+                  download.Content.CopyTo(file);
+
+                     return file.Name ;
+                 }
+
+
+             }
+             catch (Exception ex)
+             {
+                 throw new NotImplementedException(); ;
+             }
+
+             // throw new NotImplementedException();
         }
 
         public async Task UploadExperimentResult(IExperimentResult result)

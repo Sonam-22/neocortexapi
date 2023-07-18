@@ -1,4 +1,6 @@
-# Title of your SE Project - Azure Cloud Implementation
+# Investigate and Implement SDR Classifier - Azure Cloud Implementation
+
+A classifier in machine learning is an algorithm that automatically orders or categorizes data into one or more set of “classes”. The SDR classifier takes the form of a single layer classification network that takes SDRs as input and outputs a predicted distribution of classes.The SDR Classifier accepts a binary input pattern from the level below (the "activationPattern" - the vector of Temporal Memory’s active cells) and information from the sensor and encoders (the "classification") describing the true (target) input.
 
 Use this file to describe your experiment.
 This file is the whole documentation you need.
