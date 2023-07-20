@@ -19,8 +19,8 @@ namespace MyCloudProject
 
         static async Task Main(string[] args)
         {
-            MultisequenceLearningExecutor.RunMultiSequenceLearningExperiment();
-           //await StartExpermient();
+            //MultisequenceLearningExecutor.RunMultiSequenceLearningExperiment();
+           await StartExpermient(args);
         }
 
 

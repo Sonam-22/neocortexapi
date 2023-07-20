@@ -3,12 +3,15 @@ using Azure.Storage.Queues.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MyCloudProject.Common;
+using NeoCortexApi;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace MyExperiment
 {
@@ -36,7 +39,22 @@ namespace MyExperiment
         {
             // TODO read file
 
+            var sequences = new Dictionary<string, List<double>>
+            {
+                { "S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }) },
+                { "S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }) }
+            };
+
+            var predictionInputs = new List<double[]>() {
+                new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 },
+                new double[] { 2.0, 3.0, 4.0 },
+                new double[] { 8.0, 1.0, 2.0 }
+            };
+
+
             // YOU START HERE WITH YOUR SE EXPERIMENT!!!!
+
+            MultiSequenceExperiment experiment = new();
 
             ExperimentResult res = new ExperimentResult(this.config.GroupId, null);
 
@@ -44,10 +62,15 @@ namespace MyExperiment
 
             // Run your experiment code here.
 
+            // Train the model
+            var predictor = experiment.Train(sequences);
+
+            predictionInputs.ForEach(seq => PredictNextElement(predictor, seq));
+
             return Task.FromResult<IExperimentResult>(res); // TODO...
         }
 
-
+        
 
         /// <inheritdoc/>
         public async Task RunQueueListener(CancellationToken cancelToken)
@@ -108,6 +131,34 @@ namespace MyExperiment
 
 
         #region Private Methods
+
+        private void PredictNextElement(Predictor predictor, double[] list)
+        {
+            Debug.WriteLine("------------------------------");
+
+            foreach (var item in list)
+            {
+                Debug.WriteLine($"---------------{item}---------------");
+
+                var res = predictor.Predict(item);
+
+                if (res.Count > 0)
+                {
+                    foreach (var pred in res)
+                    {
+                        Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}%");
+                    }
+
+                    var predictedSequence = res.First().PredictedInput.Split('_').First();
+                    var predictedValue = res.First().PredictedInput.Split('-').Last();
+                    Debug.WriteLine($"Predicted Sequence: {predictedSequence}, predicted next element {predictedValue}");
+                }
+                else
+                    Debug.WriteLine("Nothing predicted :(");
+            }
+
+            Debug.WriteLine("------------------------------");
+        }
 
 
         #endregion
