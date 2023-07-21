@@ -3,8 +3,10 @@ using Azure.Storage.Queues.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MyCloudProject.Common;
+using NeoCortexApi;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -108,7 +110,22 @@ namespace MyExperiment
 
 
         #region Private Methods
+        // region RunMultisequnce experiment to test SDR Classifier
+        public void RunMultiSequenceLearningExperiment()
+        {
+            var classifier = new SDRClassifier<double, double>(new List<int>() { 1 }, 0.001, 0.3, 3, 1);
 
+            // Enough times to perform Inference and expect high likelihood for prediction.
+            Dictionary<string, double[]> retVal = new();
+            for (int recordNum = 0; recordNum < 10; recordNum++)
+            {
+                retVal = compute(classifier, recordNum, new List<int> { 1, 5 }, new double[] { 0 }, new double[] { 10 });
+            }
+            Assert.AreEqual(retVal["actualValues"][0], 10.0);
+            Assert.AreEqual(retVal["1"][0], 1.0);
+        }
+
+        
 
         #endregion
     }
