@@ -49,7 +49,7 @@ namespace MyExperiment
 
             MultiSequenceExperiment experiment = new();
 
-            ExperimentResult res = new ExperimentResult(this.config.GroupId, null);
+            ExperimentResult res = new ExperimentResult(this.config.GroupId, "1");
 
             res.StartTimeUtc = DateTime.UtcNow;
 
@@ -62,6 +62,10 @@ namespace MyExperiment
                 predictor.Reset();
                 PredictNextElement(predictor, seq);
             });
+
+            res.EndTimeUtc = DateTime.UtcNow;
+            var elapsedTime = res.EndTimeUtc - res.StartTimeUtc;
+            res.DurationSec = (long)elapsedTime.GetValueOrDefault().TotalSeconds;
 
             return Task.FromResult<IExperimentResult>(res); // TODO...
         }
@@ -92,7 +96,7 @@ namespace MyExperiment
 
                         var inputFile = await this.storageProvider.DownloadInputFile(request.InputFile);
 
-                        IExperimentResult result = await this.Run(inputFile);
+                        IExperimentResult result = await Run(inputFile);
 
                         //TODO. do serialization of the result.
                         await storageProvider.UploadResultFile("outputfile.txt", null);
@@ -121,11 +125,11 @@ namespace MyExperiment
 
         private void PredictNextElement(Predictor predictor, double[] list)
         {
-            Debug.WriteLine("------------------------------");
+            logger.LogInformation("------------------------------");
 
             foreach (var item in list)
             {
-                Debug.WriteLine($"---------------{item}---------------");
+                logger.LogInformation($"--------------- Input {item} ---------------");
 
                 var res = predictor.Predict(item);
 
@@ -138,13 +142,13 @@ namespace MyExperiment
 
                     var predictedSequence = res.First().PredictedInput.Split('_').First();
                     var predictedValue = res.First().PredictedInput.Split('-').Last();
-                    Debug.WriteLine($"Predicted Sequence: {predictedSequence}, predicted next element {predictedValue}");
+                    logger.LogInformation($"Predicted Sequence: {predictedSequence}, predicted next element {predictedValue}");
                 }
                 else
-                    Debug.WriteLine("Nothing predicted :(");
+                    logger.LogInformation("Nothing predicted :(");
             }
 
-            Debug.WriteLine("------------------------------");
+            logger.LogInformation("------------------------------");
         }
 
 
