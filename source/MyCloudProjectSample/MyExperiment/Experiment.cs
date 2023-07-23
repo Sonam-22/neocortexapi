@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using System.IO;
 
 namespace MyExperiment
 {
@@ -39,19 +40,11 @@ namespace MyExperiment
         {
             // TODO read file
 
-            var sequences = new Dictionary<string, List<double>>
-            {
-                { "S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }) },
-                { "S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }) }
-            };
+            var text = File.ReadAllText(inputFile, Encoding.UTF8);
 
-            var predictionInputs = new List<double[]>() {
-                new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 },
-                new double[] { 2.0, 3.0, 4.0 },
-                new double[] { 8.0, 1.0, 2.0 }
-            };
+            var trainingData = JsonSerializer.Deserialize<TrainingData>(text);
 
-
+            
             // YOU START HERE WITH YOUR SE EXPERIMENT!!!!
 
             MultiSequenceExperiment experiment = new();
@@ -63,9 +56,9 @@ namespace MyExperiment
             // Run your experiment code here.
 
             // Train the model
-            var predictor = experiment.Train(sequences);
+            var predictor = experiment.Train(trainingData.Sequences);
 
-            predictionInputs.ForEach(seq => {
+            trainingData.Validation.ForEach(seq => {
                 predictor.Reset();
                 PredictNextElement(predictor, seq);
             });
@@ -78,16 +71,7 @@ namespace MyExperiment
         /// <inheritdoc/>
         public async Task RunQueueListener(CancellationToken cancelToken)
         {
-            ExperimentResult res = new ExperimentResult("damir", "123")
-            {
-                //Timestamp = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
-                
-                Accuracy = (float)0.5,
-            };
-
-            await storageProvider.UploadExperimentResult(res);
-
-
+          
             QueueClient queueClient = new QueueClient(this.config.StorageConnectionString, this.config.Queue);
 
             

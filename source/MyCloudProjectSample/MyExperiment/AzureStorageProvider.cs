@@ -22,17 +22,15 @@ namespace MyExperiment
 
         public async Task<string> DownloadInputFile(string fileName)
         {
-            BlobContainerClient container = new BlobContainerClient("read from config", "sample-container TODO. Read from config");
+            BlobContainerClient container = new BlobContainerClient(config.StorageConnectionString, config.TrainingContainer);
             await container.CreateIfNotExistsAsync();
 
             // Get a reference to a blob named "sample-file"
             BlobClient blob = container.GetBlobClient(fileName);
 
-            //throw if not exists:
-            //blob.ExistsAsync
+            await blob.DownloadToAsync(fileName);
 
-            // return "../myinputfilexy.csv"
-            throw new NotImplementedException();
+            return fileName;
         }
 
         public async Task UploadExperimentResult(IExperimentResult result)
@@ -41,14 +39,6 @@ namespace MyExperiment
 
             await client.CreateIfNotExistsAsync();
 
-            ExperimentResult res = new ExperimentResult("damir", "123")
-            {
-                //Timestamp = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
-
-                Accuracy = (float)0.5,
-            };
-
-         
             await client.UpsertEntityAsync((ExperimentResult)result);
 
         }
