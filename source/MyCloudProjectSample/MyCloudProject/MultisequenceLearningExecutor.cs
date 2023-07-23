@@ -7,8 +7,8 @@ using System.Linq;
 
 namespace MyCloudProject
 {
-	public class MultisequenceLearningExecutor
-	{
+    public class MultisequenceLearningExecutor
+    {
         /// <summary>
         /// This example demonstrates how to learn two sequences and how to use the prediction mechanism.
         /// First, two sequences are learned.
@@ -25,25 +25,28 @@ namespace MyCloudProject
 
             //
             // Prototype for building the prediction engine.
-            MultiSequenceExperiment experiment = new ();
-            var predictor = experiment.Run(sequences);
+            MultiSequenceExperiment experiment = new();
+            var predictor = experiment.Train(sequences);
 
             //
             // These list are used to see how the prediction works.
             // Predictor is traversing the list element by element. 
             // By providing more elements to the prediction, the predictor delivers more precise result.
+
+            var predictionInputs = new List<double[]>() {
+                new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 },
+                new double[] { 2.0, 3.0, 4.0 },
+                new double[] { 8.0, 1.0, 2.0 }
+            };
             var list1 = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 };
             var list2 = new double[] { 2.0, 3.0, 4.0 };
             var list3 = new double[] { 8.0, 1.0, 2.0 };
 
-            predictor.Reset();
-            PredictNextElement(predictor, list1);
-
-            predictor.Reset();
-            PredictNextElement(predictor, list2);
-
-            predictor.Reset();
-            PredictNextElement(predictor, list3);
+            predictionInputs.ForEach(seq =>
+            {
+                predictor.Reset();
+                PredictNextElement(predictor, seq);
+            });
         }
 
         private static void PredictNextElement(Predictor predictor, double[] list)

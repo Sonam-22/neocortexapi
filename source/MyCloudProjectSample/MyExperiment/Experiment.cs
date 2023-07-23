@@ -65,7 +65,10 @@ namespace MyExperiment
             // Train the model
             var predictor = experiment.Train(sequences);
 
-            predictionInputs.ForEach(seq => PredictNextElement(predictor, seq));
+            predictionInputs.ForEach(seq => {
+                predictor.Reset();
+                PredictNextElement(predictor, seq);
+            });
 
             return Task.FromResult<IExperimentResult>(res); // TODO...
         }

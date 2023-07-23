@@ -89,6 +89,7 @@ namespace MyExperiment
 
             var numUniqueInputs = GetNumberOfInputs(sequences);
 
+            //Initialize the SDR classifier.
             SDRClassifier<string, ComputeCycle> cls = new SDRClassifier<string, ComputeCycle>(new List<int>() { step }, 0.1, 0.3, 3, 1);
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
