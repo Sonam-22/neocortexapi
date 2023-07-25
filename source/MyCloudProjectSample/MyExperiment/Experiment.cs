@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using System.IO;
+using NeoCortexApi.Classifiers;
 
 namespace MyExperiment
 {
@@ -40,6 +41,8 @@ namespace MyExperiment
         {
             // TODO read file
 
+            var outputFile = "output.txt";
+
             var text = File.ReadAllText(inputFile, Encoding.UTF8);
 
             var trainingData = JsonSerializer.Deserialize<TrainingData>(text);
@@ -58,14 +61,12 @@ namespace MyExperiment
             // Train the model
             var predictor = experiment.Train(trainingData.Sequences);
 
-            trainingData.Validation.ForEach(seq => {
-                predictor.Reset();
-                PredictNextElement(predictor, seq);
-            });
+            trainingData.Validation.ForEach(seq => PredictNextElement(predictor, seq, outputFile));
 
             res.EndTimeUtc = DateTime.UtcNow;
             var elapsedTime = res.EndTimeUtc - res.StartTimeUtc;
             res.DurationSec = (long)elapsedTime.GetValueOrDefault().TotalSeconds;
+            res.OutputFiles = new string[] { outputFile };
 
             return Task.FromResult<IExperimentResult>(res); // TODO...
         }
@@ -107,7 +108,7 @@ namespace MyExperiment
                     }
                     catch (Exception ex)
                     {
-                        this.logger?.LogError(ex, "TODO...");
+                        this.logger?.LogError(ex, "Something ern wrong while running the experiment");
                     }
                 }
                 else
@@ -123,32 +124,45 @@ namespace MyExperiment
 
         #region Private Methods
 
-        private void PredictNextElement(Predictor predictor, double[] list)
+        private void PredictNextElement(Predictor predictor, double[] list, string outputFileName)
         {
-            logger.LogInformation("------------------------------");
+            List<string> resultLines = new();
 
+            AddAndLog(resultLines, "------------------------------");
+
+            predictor.Reset();
+
+         
             foreach (var item in list)
             {
-                logger.LogInformation($"--------------- Input {item} ---------------");
+                AddAndLog(resultLines, $"--------------- Input {item} ---------------");
 
                 var res = predictor.Predict(item);
+
 
                 if (res.Count > 0)
                 {
                     foreach (var pred in res)
                     {
-                        Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}%");
+                        AddAndLog(resultLines, $"{pred.PredictedInput} - {pred.Similarity}%");
                     }
 
                     var predictedSequence = res.First().PredictedInput.Split('_').First();
                     var predictedValue = res.First().PredictedInput.Split('-').Last();
-                    logger.LogInformation($"Predicted Sequence: {predictedSequence}, predicted next element {predictedValue}");
+                    AddAndLog(resultLines, $"Predicted Sequence: {predictedSequence}, predicted next element {predictedValue}");
                 }
                 else
-                    logger.LogInformation("Nothing predicted :(");
+                    AddAndLog(resultLines, "Nothing predicted :(");
             }
 
-            logger.LogInformation("------------------------------");
+            AddAndLog(resultLines, "------------------------------");
+
+            File.WriteAllLines(outputFileName, resultLines);
+        }
+
+        private void AddAndLog(List<string> resultLines, string line) {
+            logger.LogInformation(line);
+            resultLines.Add(line);
         }
 
 
