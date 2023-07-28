@@ -13,7 +13,7 @@ namespace MyCloudProject
         /// <summary>
         /// Your project ID from the last semester.
         /// </summary>
-        private static string projectName = "ML19/20-5.8";
+        private static string projectName = "ML22/23-4 Investigate and Implement SDR Classifier";
 
         string test;
 

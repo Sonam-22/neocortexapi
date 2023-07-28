@@ -91,11 +91,11 @@ namespace MyExperiment
 
                         string msgTxt = Encoding.UTF8.GetString(message.Body.ToArray());
 
-                        this.logger?.LogInformation($"Received the message {msgTxt}");
+                        logger?.LogInformation($"Received the message {msgTxt}");
 
                         ExerimentRequestMessage request = JsonSerializer.Deserialize<ExerimentRequestMessage>(msgTxt);
 
-                        var inputFile = await this.storageProvider.DownloadInputFile(request.InputFile);
+                        var inputFile = await storageProvider.DownloadInputFile(request.InputFile);
 
                         IExperimentResult result = await Run(inputFile);
 
@@ -108,7 +108,7 @@ namespace MyExperiment
                     }
                     catch (Exception ex)
                     {
-                        this.logger?.LogError(ex, "Something ern wrong while running the experiment");
+                       logger?.LogError(ex, "Something ern wrong while running the experiment");
                     }
                 }
                 else
