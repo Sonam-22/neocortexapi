@@ -7,6 +7,7 @@ using NeoCortexApi;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -150,7 +151,20 @@ namespace MyExperiment
 
              Debug.WriteLine("------------------------------");
          }
+     private double[] ReadCsvValues(string filePath)
+         {
+             double pdValue;
+             double[] pdValues;
 
+             var values = File.ReadAllLines(filePath)
+                 .SelectMany(a => a.Split(';')
+                 .Select(str => double.TryParse(str, out pdValue) ? pdValue : 0));
+
+             pdValues = values.ToArray();
+
+             return pdValues;
+         }
+        
         #endregion
     }
 }
