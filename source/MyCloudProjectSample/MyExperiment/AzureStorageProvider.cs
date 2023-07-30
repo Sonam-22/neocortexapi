@@ -45,9 +45,11 @@ namespace MyExperiment
 
         public async Task<byte[]> UploadResultFile(string fileName, byte[] data)
         {
+            BlobContainerClient container = new BlobContainerClient(config.StorageConnectionString, config.ResultContainer);
 
+            await container.UploadBlobAsync(fileName, BinaryData.FromBytes(data));
 
-            throw new NotImplementedException();
+            return data;
         }
 
     }

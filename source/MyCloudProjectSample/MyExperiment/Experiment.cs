@@ -67,8 +67,9 @@ namespace MyExperiment
             var elapsedTime = res.EndTimeUtc - res.StartTimeUtc;
             res.DurationSec = (long)elapsedTime.GetValueOrDefault().TotalSeconds;
             res.OutputFiles = new string[] { outputFile };
+            res.InputFileUrl = inputFile;
 
-            return Task.FromResult<IExperimentResult>(res); // TODO...
+            return Task.FromResult<IExperimentResult>(res);
         }
 
         
@@ -97,10 +98,9 @@ namespace MyExperiment
 
                         var inputFile = await storageProvider.DownloadInputFile(request.InputFile);
 
-                        IExperimentResult result = await Run(inputFile);
-
-                        //TODO. do serialization of the result.
-                        await storageProvider.UploadResultFile("outputfile.txt", null);
+                        ExperimentResult result = await Run(inputFile) as ExperimentResult;
+                      
+                        await storageProvider.UploadResultFile("outputfile.txt", File.ReadAllBytes(result.OutputFiles[0]));
 
                         await storageProvider.UploadExperimentResult(result);
 
