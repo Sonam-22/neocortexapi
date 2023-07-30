@@ -40,13 +40,13 @@ namespace MyExperiment
             await client.CreateIfNotExistsAsync();
 
             await client.UpsertEntityAsync((ExperimentResult)result);
-
         }
 
         public async Task<byte[]> UploadResultFile(string fileName, byte[] data)
         {
             BlobContainerClient container = new BlobContainerClient(config.StorageConnectionString, config.ResultContainer);
 
+            await container.DeleteBlobIfExistsAsync(fileName);
             await container.UploadBlobAsync(fileName, BinaryData.FromBytes(data));
 
             return data;
