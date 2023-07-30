@@ -7,11 +7,19 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
 using System.Linq;
 using SDRClassifier;
+using Microsoft.Extensions.Logging;
 
 namespace MyExperiment
 {
     public class MultiSequenceExperiment
     {
+
+        private ILogger logger;
+
+
+        public MultiSequenceExperiment(ILogger logger) {
+            this.logger = logger;
+        }
 
         /// <summary>
         /// Runs the learning of sequences.
@@ -19,7 +27,7 @@ namespace MyExperiment
         /// <param name="sequences">Dictionary of sequences. KEY is the sewuence name, the VALUE is th elist of element of the sequence.</param>
         public Predictor Train(Dictionary<string, List<double>> sequences)
         {
-            Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(MultiSequenceExperiment)}");
+            logger.LogInformation($"Hello NeocortexApi! Experiment {nameof(MultiSequenceExperiment)}");
 
             int inputBits = 100;
             int numColumns = 1024;
@@ -303,14 +311,14 @@ namespace MyExperiment
                     if (accuracy >= maxPossibleAccuraccy)
                     {
                         maxMatchCnt++;
-                        Debug.WriteLine($"100% accuracy reched {maxMatchCnt} times.");
+                        logger.LogInformation($"100% accuracy reached {maxMatchCnt} times.");
 
                         //
                         // Experiment is completed if we are 30 cycles long at the 100% accuracy.
                         if (maxMatchCnt >= 30)
                         {
                             sw.Stop();
-                            Debug.WriteLine($"Sequence learned. The algorithm is in the stable state after 30 repeats with with accuracy {accuracy} of maximum possible {maxMatchCnt}. Elapsed sequence {sequenceKeyPair.Key} learning time: {sw.Elapsed}.");
+                            logger.LogInformation($"Sequence learned. The algorithm is in the stable state after 30 repeats with with accuracy {accuracy} of maximum possible {maxMatchCnt}. Elapsed sequence {sequenceKeyPair.Key} learning time: {sw.Elapsed}.");
                             isLearningCompleted = true;
                             break;
                         }

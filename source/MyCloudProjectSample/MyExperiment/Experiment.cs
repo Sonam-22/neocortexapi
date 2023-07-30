@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.IO;
 using NeoCortexApi.Classifiers;
+using System.Collections;
 
 namespace MyExperiment
 {
@@ -42,15 +43,17 @@ namespace MyExperiment
             // TODO read file
 
             var outputFile = "output.txt";
-
+            List<double> accuracies = new();
             var text = File.ReadAllText(inputFile, Encoding.UTF8);
-
             var trainingData = JsonSerializer.Deserialize<TrainingData>(text);
-
-            
+            var sequeneceAsString = trainingData.Sequences
+                .Select(kv => $"{kv.Key} : {string.Join(",", kv.Value)}")
+                .ToArray();
+            sequeneceAsString.Prepend("Training Sequences");
+            File.AppendAllLines(outputFile, sequeneceAsString);
             // YOU START HERE WITH YOUR SE EXPERIMENT!!!!
 
-            MultiSequenceExperiment experiment = new();
+            MultiSequenceExperiment experiment = new(logger);
 
             ExperimentResult res = new ExperimentResult(this.config.GroupId, "1");
 
@@ -61,14 +64,18 @@ namespace MyExperiment
             // Train the model
             var predictor = experiment.Train(trainingData.Sequences);
 
-            trainingData.Validation.ForEach(seq => PredictNextElement(predictor, seq, outputFile));
+            trainingData.Validation.ForEach(seq => PredictNextElement(predictor, seq, outputFile, accuracies));
 
+            res.Timestamp = DateTime.UtcNow;
             res.EndTimeUtc = DateTime.UtcNow;
+            res.ExperimentId = "ML-1";
             var elapsedTime = res.EndTimeUtc - res.StartTimeUtc;
             res.DurationSec = (long)elapsedTime.GetValueOrDefault().TotalSeconds;
             res.OutputFiles = new string[] { outputFile };
             res.InputFileUrl = inputFile;
-
+            res.Description = "MultiSequence learning with sdr classifier";
+            res.Name = "MultiSequence learning";
+            res.Accuracy = 100;
             return Task.FromResult<IExperimentResult>(res);
         }
 
@@ -108,7 +115,7 @@ namespace MyExperiment
                     }
                     catch (Exception ex)
                     {
-                       logger?.LogError(ex, "Something ern wrong while running the experiment");
+                       logger?.LogError(ex, "Something went wrong while running the experiment");
                     }
                 }
                 else
@@ -124,7 +131,7 @@ namespace MyExperiment
 
         #region Private Methods
 
-        private void PredictNextElement(Predictor predictor, double[] list, string outputFileName)
+        private void PredictNextElement(Predictor predictor, double[] list, string outputFileName, List<double> accuracies)
         {
             List<string> resultLines = new();
 
@@ -146,7 +153,7 @@ namespace MyExperiment
                     {
                         AddAndLog(resultLines, $"{pred.PredictedInput} - {pred.Similarity}%");
                     }
-
+                    accuracies.Add(res[0].Similarity);
                     var predictedSequence = res.First().PredictedInput.Split('_').First();
                     var predictedValue = res.First().PredictedInput.Split('-').Last();
                     AddAndLog(resultLines, $"Predicted Sequence: {predictedSequence}, predicted next element {predictedValue}");
@@ -156,15 +163,13 @@ namespace MyExperiment
             }
 
             AddAndLog(resultLines, "------------------------------");
-
-            File.WriteAllLines(outputFileName, resultLines);
+            File.AppendAllLines(outputFileName, resultLines);
         }
 
         private void AddAndLog(List<string> resultLines, string line) {
             logger.LogInformation(line);
             resultLines.Add(line);
         }
-
 
         #endregion
     }
