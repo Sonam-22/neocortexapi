@@ -151,7 +151,7 @@ namespace MyExperiment
 
              Debug.WriteLine("------------------------------");
          }
-     private double[] ReadCsvValues(string filePath)
+        private double[] ReadCsvValues(string filePath)
          {
              double pdValue;
              double[] pdValues;
@@ -164,7 +164,12 @@ namespace MyExperiment
 
              return pdValues;
          }
-        
+        public class MyDataClass
+         {
+             public string Field1 { get; set; }
+             public int Field2 { get; set; }
+         }
+         double pdValue;
         #endregion
     }
 }
