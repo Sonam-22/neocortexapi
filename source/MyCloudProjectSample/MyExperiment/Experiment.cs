@@ -71,7 +71,7 @@ namespace MyExperiment
             res.ExperimentId = "ML-1";
             var elapsedTime = res.EndTimeUtc - res.StartTimeUtc;
             res.DurationSec = (long)elapsedTime.GetValueOrDefault().TotalSeconds;
-            res.OutputFiles = new string[] { outputFile };
+            res.OutputFilesProxy = new string[] { outputFile };
             res.InputFileUrl = inputFile;
             res.Description = "MultiSequence learning with sdr classifier";
             res.Name = "MultiSequence learning";
@@ -106,12 +106,14 @@ namespace MyExperiment
                         var inputFile = await storageProvider.DownloadInputFile(request.InputFile);
 
                         ExperimentResult result = await Run(inputFile) as ExperimentResult;
-                      
-                        await storageProvider.UploadResultFile("outputfile.txt", File.ReadAllBytes(result.OutputFiles[0]));
+
+                        await storageProvider.UploadResultFile("outputfile.txt", File.ReadAllBytes(result.OutputFilesProxy[0]));
 
                         await storageProvider.UploadExperimentResult(result);
 
                         await queueClient.DeleteMessageAsync(message.MessageId, message.PopReceipt);
+
+                        File.Delete(result.OutputFilesProxy[0]);
                     }
                     catch (Exception ex)
                     {

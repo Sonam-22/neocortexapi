@@ -39,7 +39,9 @@ namespace MyExperiment
 
             await client.CreateIfNotExistsAsync();
 
-            await client.UpsertEntityAsync((ExperimentResult)result);
+            var temp = (ExperimentResult)result;
+
+            await client.UpsertEntityAsync((ExperimentResult)result, TableUpdateMode.Replace);
         }
 
         public async Task<byte[]> UploadResultFile(string fileName, byte[] data)
@@ -53,6 +55,5 @@ namespace MyExperiment
         }
 
     }
-
 
 }
