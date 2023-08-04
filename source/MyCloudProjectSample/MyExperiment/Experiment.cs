@@ -129,6 +129,17 @@ namespace MyExperiment
         private static void PredictNextElement(Predictor predictor, double[] list)
          {
              Debug.WriteLine("------------------------------");
+             var predictionInputs = new List<double[]>() {
+                 new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 },
+                 new double[] { 2.0, 3.0, 4.0 },
+                 new double[] { 8.0, 1.0, 2.0 }
+             };
+
+             predictionInputs.ForEach(seq =>
+             {
+                 predictor.Reset();
+                 PredictNextElement(predictor, seq);
+             });
 
              foreach (var item in list)
              {
