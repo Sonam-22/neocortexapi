@@ -114,7 +114,12 @@ namespace MyExperiment
         // region RunMultisequnce experiment to test SDR Classifier
         public void RunMultiSequenceLearningExperiment()
         {
+            sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
+             sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
             var classifier = new SDRClassifier<double, double>(new List<int>() { 1 }, 0.001, 0.3, 3, 1);
+
+            MultiSequenceExperiment experiment = new ();
+             var predictor = experiment.Run(sequences);
 
             // Enough times to perform Inference and expect high likelihood for prediction.
             Dictionary<string, double[]> retVal = new();
