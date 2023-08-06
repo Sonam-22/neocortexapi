@@ -12,10 +12,7 @@ COPY ["nuget.config", "."]
 COPY ["MyCloudProjectSample/MyCloudProject/MyCloudProject.csproj", "MyCloudProjectSample/MyCloudProject/"]
 COPY ["MyCloudProjectSample/MyCloudProject.Common/MyCloudProject.Common.csproj", "MyCloudProjectSample/MyCloudProject.Common/"]
 COPY ["MyCloudProjectSample/MyExperiment/MyExperiment.csproj", "MyCloudProjectSample/MyExperiment/"]
-COPY ["NeoCortexApi/NeoCortexApi.csproj", "NeoCortexApi/"]
-COPY ["NeoCortexArrayLib/NeoCortexArrayLib.csproj", "NeoCortexArrayLib/"]
-COPY ["NeoCortexEntities/NeoCortexEntities.csproj", "NeoCortexEntities/"]
-COPY ["NeoCortexUtils/NeoCortexUtils.csproj", "NeoCortexUtils/"]
+
 COPY ["MySEProject/SDRClassifier/SDRClassifier/SDRClassifier.csproj", "MySEProject/SDRClassifier/SDRClassifier/"]
 RUN dotnet restore "MyCloudProjectSample/MyCloudProject/MyCloudProject.csproj"
 COPY . .
