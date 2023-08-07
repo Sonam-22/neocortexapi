@@ -29,13 +29,16 @@ namespace MyExperiment
 
         private MyConfig config;
 
-        public Experiment(IConfigurationSection configSection, IStorageProvider storageProvider, ILogger log)
+        private string projectName;
+
+        public Experiment(IConfigurationSection configSection, IStorageProvider storageProvider, ILogger log, string projectName)
         {
             this.storageProvider = storageProvider;
             this.logger = log;
 
             config = new MyConfig();
             configSection.Bind(config);
+            this.projectName = projectName;
         }
 
         public Task<IExperimentResult> Run(string inputFile)
@@ -68,7 +71,7 @@ namespace MyExperiment
 
             res.Timestamp = DateTime.UtcNow;
             res.EndTimeUtc = DateTime.UtcNow;
-            res.ExperimentId = "ML-1";
+            res.ExperimentId = projectName;
             var elapsedTime = res.EndTimeUtc - res.StartTimeUtc;
             res.DurationSec = (long)elapsedTime.GetValueOrDefault().TotalSeconds;
             res.OutputFilesProxy = new string[] { outputFile };

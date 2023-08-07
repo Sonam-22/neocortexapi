@@ -109,10 +109,10 @@ namespace MyExperiment
             {
                 if (isStable)
                     // Event should be fired when entering the stable state.
-                    Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                    logger.LogDebug($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
                 else
                     // Ideal SP should never enter unstable state after stable state.
-                    Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                    logger.LogDebug($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
 
                 // We are not learning in instable state.
                 isInStableState = isStable;
@@ -154,13 +154,13 @@ namespace MyExperiment
 
                 cycle++;
 
-                Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
+                logger.LogDebug($"-------------- Newborn Cycle {cycle} ---------------");
 
                 foreach (var inputs in sequences)
                 {
                     foreach (var input in inputs.Value)
                     {
-                        Debug.WriteLine($" -- {inputs.Key} - {input} --");
+                        logger.LogDebug($" -- {inputs.Key} - {input} --");
 
                         var lyrOut = layer1.Compute(input, true);
 
@@ -186,7 +186,7 @@ namespace MyExperiment
             // Loop over all sequences.
             foreach (var sequenceKeyPair in sequences)
             {
-                Debug.WriteLine($"-------------- Sequences {sequenceKeyPair.Key} ---------------");
+                logger.LogDebug($"-------------- Sequences {sequenceKeyPair.Key} ---------------");
 
                 int maxPrevInputs = sequenceKeyPair.Value.Count - 1;
 
@@ -204,14 +204,14 @@ namespace MyExperiment
 
                     cycle++;
 
-                    Debug.WriteLine("");
+                    logger.LogDebug("");
 
-                    Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
-                    Debug.WriteLine("");
+                    logger.LogDebug($"-------------- Cycle {cycle} ---------------");
+                    logger.LogDebug("");
 
                     foreach (var input in sequenceKeyPair.Value)
                     {
-                        Debug.WriteLine($"-------------- {input} ---------------");
+                        logger.LogDebug($"-------------- {input} ---------------");
 
                         var lyrOut = layer1.Compute(input, true) as ComputeCycle;
 
@@ -257,8 +257,8 @@ namespace MyExperiment
 
                         cls.Learn(key, actCells.ToArray(), learnInfo);
 
-                        Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
-                        Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
+                        logger.LogDebug($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
+                        logger.LogDebug($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
 
                         //
                         // If the list of predicted values from the previous step contains the currently presenting value,
@@ -266,11 +266,11 @@ namespace MyExperiment
                         if (lastPredictedValues.Contains(key))
                         {
                             matches++;
-                            Debug.WriteLine($"Match. Actual value: {key} - Predicted value: {lastPredictedValues.FirstOrDefault(key)}.");
+                            logger.LogDebug($"Match. Actual value: {key} - Predicted value: {lastPredictedValues.FirstOrDefault(key)}.");
                         }
                         else
                         {
-                            Debug.WriteLine($"Missmatch! Actual value: {key} - Predicted values: {String.Join(',', lastPredictedValues)}");
+                            logger.LogDebug($"Missmatch! Actual value: {key} - Predicted values: {String.Join(',', lastPredictedValues)}");
                         }
                             
                         if (lyrOut.PredictiveCells.Count > 0)
@@ -289,14 +289,14 @@ namespace MyExperiment
 
                             foreach (var item in predictedInputValues)
                             {
-                                Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {item.PredictedInput} - {item.Similarity}%");
+                                logger.LogDebug($"Current Input: {input} \t| Predicted Input: {item.PredictedInput} - {item.Similarity}%");
                             }
 
                             lastPredictedValues = predictedInputValues.Select(v => v.PredictedInput).ToList();
                         }
                         else
                         {
-                            Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
+                            logger.LogDebug($"NO CELLS PREDICTED for next cycle.");
                             lastPredictedValues = new List<string>();
                         }
                     }
@@ -306,7 +306,7 @@ namespace MyExperiment
 
                     double accuracy = (double)matches / (double)sequenceKeyPair.Value.Count * 100.0;
 
-                    Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.Value.Count}\t {accuracy}%");
+                    logger.LogDebug($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.Value.Count}\t {accuracy}%");
 
                     if (accuracy >= maxPossibleAccuraccy)
                     {
@@ -325,7 +325,7 @@ namespace MyExperiment
                     }
                     else if (maxMatchCnt > 0)
                     {
-                        Debug.WriteLine($"At 100% accuracy after {maxMatchCnt} repeats we get a drop of accuracy with accuracy {accuracy}. This indicates instable state. Learning will be continued.");
+                        logger.LogDebug($"At 100% accuracy after {maxMatchCnt} repeats we get a drop of accuracy with accuracy {accuracy}. This indicates instable state. Learning will be continued.");
                         maxMatchCnt = 0;
                     }
 
@@ -337,7 +337,7 @@ namespace MyExperiment
                     throw new Exception($"The system didn't learn with expected acurracy!");
             }
 
-            Debug.WriteLine("------------ END ------------");
+            logger.LogDebug("------------ END ------------");
 
             return new Predictor(layer1, mem, cls);
         }
