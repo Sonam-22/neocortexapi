@@ -1,10 +1,6 @@
-# Title of your SE Project - Azure Cloud Implementation
+# ML22/23-4 Investigate and Implement SDR Classifier - Team-Lightening - Azure Cloud Implementation
 
-Use this file to describe your experiment.
-This file is the whole documentation you need.
-It should include images, best with relative path in Documentation. For Example "/pic/image.png"  
-Do not paste code-snippets here as image. Use rather markdoown (MD) code documentation.
-For example:
+This experiment demonstrates a Multisequence experiment using SDRClassifier and complete HTM pipeline inlcuding Encoders, Spatial Pooler and Temporal Memory. In the final stage job of classification of SDRs provided by Temporal memory is achieved using a SDRClassifier, configured in a zero step mode.
 
 ~~~csharp
 public voiud MyFunction()
