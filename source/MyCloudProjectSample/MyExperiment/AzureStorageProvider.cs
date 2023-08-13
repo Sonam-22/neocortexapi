@@ -36,18 +36,16 @@ namespace MyExperiment
         public async Task UploadExperimentResult(IExperimentResult result)
         {
             var client = new TableClient(this.config.StorageConnectionString, this.config.ResultTable);
-
             await client.CreateIfNotExistsAsync();
-
             var temp = (ExperimentResult)result;
-
-            await client.UpsertEntityAsync((ExperimentResult)result, TableUpdateMode.Replace);
+            await client.UpsertEntityAsync(temp, TableUpdateMode.Replace);
         }
 
         public async Task<byte[]> UploadResultFile(string fileName, byte[] data)
         {
             BlobContainerClient container = new BlobContainerClient(config.StorageConnectionString, config.ResultContainer);
 
+            await container.CreateIfNotExistsAsync();
             await container.DeleteBlobIfExistsAsync(fileName);
             await container.UploadBlobAsync(fileName, BinaryData.FromBytes(data));
 
