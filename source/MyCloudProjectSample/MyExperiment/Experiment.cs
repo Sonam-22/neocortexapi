@@ -164,24 +164,6 @@ namespace MyExperiment
 
              Debug.WriteLine("------------------------------");
          }
-        private double[] ReadCsvValues(string filePath)
-         {
-             double pdValue;
-             double[] pdValues;
-
-             var values = File.ReadAllLines(filePath)
-                 .SelectMany(a => a.Split(';')
-                 .Select(str => double.TryParse(str, out pdValue) ? pdValue : 0));
-
-             pdValues = values.ToArray();
-
-             return pdValues;
-         }
-        public class MyDataClass
-         {
-             public int Field2 { get; set; }
-         }
-         double pdValue;
         #endregion
     }
 }
