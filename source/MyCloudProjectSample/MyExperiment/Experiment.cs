@@ -7,6 +7,7 @@ using NeoCortexApi;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -115,6 +116,9 @@ namespace MyExperiment
         {
             var classifier = new SDRClassifier<double, double>(new List<int>() { 1 }, 0.001, 0.3, 3, 1);
 
+            MultiSequenceExperiment experiment = new ();
+             var predictor = experiment.Run(sequences);
+
             // Enough times to perform Inference and expect high likelihood for prediction.
             Dictionary<string, double[]> retVal = new();
             for (int recordNum = 0; recordNum < 10; recordNum++)
@@ -128,6 +132,16 @@ namespace MyExperiment
         private static void PredictNextElement(Predictor predictor, double[] list)
          {
              Debug.WriteLine("------------------------------");
+             var predictionInputs = new List<double[]>() {
+                 new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 },
+                 new double[] { 2.0, 3.0, 4.0 },
+             };
+
+             predictionInputs.ForEach(seq =>
+             {
+                 predictor.Reset();
+                 PredictNextElement(predictor, seq);
+             });
 
              foreach (var item in list)
              {
@@ -150,7 +164,6 @@ namespace MyExperiment
 
              Debug.WriteLine("------------------------------");
          }
-
         #endregion
     }
 }
