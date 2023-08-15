@@ -8,6 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="SampleFiles\" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
@@ -27,4 +30,7 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="SampleFiles\" />
+  </ItemGroup>
 </Project>
