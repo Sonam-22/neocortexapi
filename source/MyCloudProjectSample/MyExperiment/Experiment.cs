@@ -111,59 +111,6 @@ namespace MyExperiment
 
 
         #region Private Methods
-        // region RunMultisequnce experiment to test SDR Classifier
-        public void RunMultiSequenceLearningExperiment()
-        {
-            var classifier = new SDRClassifier<double, double>(new List<int>() { 1 }, 0.001, 0.3, 3, 1);
-
-            MultiSequenceExperiment experiment = new ();
-             var predictor = experiment.Run(sequences);
-
-            // Enough times to perform Inference and expect high likelihood for prediction.
-            Dictionary<string, double[]> retVal = new();
-            for (int recordNum = 0; recordNum < 10; recordNum++)
-            {
-                retVal = compute(classifier, recordNum, new List<int> { 1, 5 }, new double[] { 0 }, new double[] { 10 });
-            }
-            Assert.AreEqual(retVal["actualValues"][0], 10.0);
-            Assert.AreEqual(retVal["1"][0], 1.0);
-        }
-
-        private static void PredictNextElement(Predictor predictor, double[] list)
-         {
-             Debug.WriteLine("------------------------------");
-             var predictionInputs = new List<double[]>() {
-                 new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 },
-                 new double[] { 2.0, 3.0, 4.0 },
-             };
-
-             predictionInputs.ForEach(seq =>
-             {
-                 predictor.Reset();
-                 PredictNextElement(predictor, seq);
-             });
-
-             foreach (var item in list)
-             {
-                 var res = predictor.Predict(item);
-
-                 if (res.Count > 0)
-                 {
-                     foreach (var pred in res)
-                     {
-                         Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
-                     }
-
-                     var tokens = res.First().PredictedInput.Split('_');
-                     var tokens2 = res.First().PredictedInput.Split('-');
-                     Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
-                 }
-                 else
-                     Debug.WriteLine("Nothing predicted :(");
-             }
-
-             Debug.WriteLine("------------------------------");
-         }
         #endregion
     }
 }
