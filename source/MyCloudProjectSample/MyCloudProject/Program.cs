@@ -13,12 +13,17 @@ namespace MyCloudProject
         /// <summary>
         /// Your project ID from the last semester.
         /// </summary>
-        private static string projectName = "ML22/23-4	Investigate and Implement SDR Classifier";
+        private static string projectName = "ML22/23-4 Investigate and Implement SDR Classifier";
 
         string test;
 
         static async Task Main(string[] args)
-        {
+        { 
+           await StartExpermient(args);
+        }
+
+
+        static async Task StartExpermient(string[] args) {
             CancellationTokenSource tokeSrc = new CancellationTokenSource();
 
             Console.CancelKeyPress += (sender, e) =>
@@ -42,13 +47,12 @@ namespace MyCloudProject
 
             IStorageProvider storageProvider = new AzureStorageProvider(cfgSec);
 
-            Experiment experiment = new Experiment(cfgSec, storageProvider, logger/* put some additional config here */);
-            
+            Experiment experiment = new Experiment(cfgSec, storageProvider, logger, projectName);
+
             await experiment.RunQueueListener(tokeSrc.Token);
 
             logger?.LogInformation($"{DateTime.Now} -  Experiment exit: {projectName}");
         }
-
 
     }
 }

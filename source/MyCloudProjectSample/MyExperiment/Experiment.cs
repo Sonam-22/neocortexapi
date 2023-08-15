@@ -7,11 +7,14 @@ using NeoCortexApi;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
+using System.IO;
+using NeoCortexApi.Classifiers;
+using System.Collections;
 
 namespace MyExperiment
 {
@@ -26,45 +29,65 @@ namespace MyExperiment
 
         private MyConfig config;
 
-        public Experiment(IConfigurationSection configSection, IStorageProvider storageProvider, ILogger log)
+        private string projectName;
+
+        public Experiment(IConfigurationSection configSection, IStorageProvider storageProvider, ILogger log, string projectName)
         {
             this.storageProvider = storageProvider;
             this.logger = log;
 
             config = new MyConfig();
             configSection.Bind(config);
+            this.projectName = projectName;
         }
 
         public Task<IExperimentResult> Run(string inputFile)
         {
             // TODO read file
 
+            var outputFile = "output.txt";
+            List<double> accuracies = new();
+            var text = File.ReadAllText(inputFile, Encoding.UTF8);
+            var trainingData = JsonSerializer.Deserialize<TrainingData>(text);
+            var sequeneceAsString = trainingData.Sequences
+                .Select(kv => $"{kv.Key} : {string.Join(",", kv.Value)}")
+                .ToArray();
+            sequeneceAsString.Prepend("Training Sequences");
+            File.AppendAllLines(outputFile, sequeneceAsString);
             // YOU START HERE WITH YOUR SE EXPERIMENT!!!!
 
-            ExperimentResult res = new ExperimentResult(this.config.GroupId, null);
+            MultiSequenceExperiment experiment = new(logger);
+
+            ExperimentResult res = new ExperimentResult(this.config.GroupId, "1");
 
             res.StartTimeUtc = DateTime.UtcNow;
 
             // Run your experiment code here.
 
-            return Task.FromResult<IExperimentResult>(res); // TODO...
+            // Train the model
+            var predictor = experiment.Train(trainingData.Sequences);
+
+            trainingData.Validation.ForEach(seq => PredictNextElement(predictor, seq, outputFile, accuracies));
+
+            res.Timestamp = DateTime.UtcNow;
+            res.EndTimeUtc = DateTime.UtcNow;
+            res.ExperimentId = projectName;
+            var elapsedTime = res.EndTimeUtc - res.StartTimeUtc;
+            res.DurationSec = (long)elapsedTime.GetValueOrDefault().TotalSeconds;
+            res.OutputFilesProxy = new string[] { outputFile };
+            res.InputFileUrl = inputFile;
+            res.Description = "MultiSequence learning with sdr classifier";
+            res.Name = "MultiSequence learning";
+            res.Accuracy = 100;
+            return Task.FromResult<IExperimentResult>(res);
         }
 
-
+        
 
         /// <inheritdoc/>
         public async Task RunQueueListener(CancellationToken cancelToken)
         {
-            ExperimentResult res = new ExperimentResult("damir", "123")
-            {
-                //Timestamp = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
-                
-                Accuracy = (float)0.5,
-            };
-
-            await storageProvider.UploadExperimentResult(res);
-
-
+          
             QueueClient queueClient = new QueueClient(this.config.StorageConnectionString, this.config.Queue);
 
             
@@ -79,24 +102,25 @@ namespace MyExperiment
 
                         string msgTxt = Encoding.UTF8.GetString(message.Body.ToArray());
 
-                        this.logger?.LogInformation($"Received the message {msgTxt}");
+                        logger?.LogInformation($"Received the message {msgTxt}");
 
                         ExerimentRequestMessage request = JsonSerializer.Deserialize<ExerimentRequestMessage>(msgTxt);
 
-                        var inputFile = await this.storageProvider.DownloadInputFile(request.InputFile);
+                        var inputFile = await storageProvider.DownloadInputFile(request.InputFile);
 
-                        IExperimentResult result = await this.Run(inputFile);
+                        ExperimentResult result = await Run(inputFile) as ExperimentResult;
 
-                        //TODO. do serialization of the result.
-                        await storageProvider.UploadResultFile("outputfile.txt", null);
+                        await storageProvider.UploadResultFile("outputfile.txt", File.ReadAllBytes(result.OutputFilesProxy[0]));
 
                         await storageProvider.UploadExperimentResult(result);
 
                         await queueClient.DeleteMessageAsync(message.MessageId, message.PopReceipt);
+
+                        File.Delete(result.OutputFilesProxy[0]);
                     }
                     catch (Exception ex)
                     {
-                        this.logger?.LogError(ex, "TODO...");
+                       logger?.LogError(ex, "Something went wrong while running the experiment");
                     }
                 }
                 else
@@ -111,6 +135,47 @@ namespace MyExperiment
 
 
         #region Private Methods
+
+        private void PredictNextElement(Predictor predictor, double[] list, string outputFileName, List<double> accuracies)
+        {
+            List<string> resultLines = new();
+
+            AddAndLog(resultLines, "------------------------------");
+
+            predictor.Reset();
+
+         
+            foreach (var item in list)
+            {
+                AddAndLog(resultLines, $"--------------- Input {item} ---------------");
+
+                var res = predictor.Predict(item);
+
+
+                if (res.Count > 0)
+                {
+                    foreach (var pred in res)
+                    {
+                        AddAndLog(resultLines, $"{pred.PredictedInput} - {pred.Similarity}%");
+                    }
+                    accuracies.Add(res[0].Similarity);
+                    var predictedSequence = res.First().PredictedInput.Split('_').First();
+                    var predictedValue = res.First().PredictedInput.Split('-').Last();
+                    AddAndLog(resultLines, $"Predicted Sequence: {predictedSequence}, predicted next element {predictedValue}");
+                }
+                else
+                    AddAndLog(resultLines, "Nothing predicted :(");
+            }
+
+            AddAndLog(resultLines, "------------------------------");
+            File.AppendAllLines(outputFileName, resultLines);
+        }
+
+        private void AddAndLog(List<string> resultLines, string line) {
+            logger.LogInformation(line);
+            resultLines.Add(line);
+        }
+
         #endregion
     }
 }

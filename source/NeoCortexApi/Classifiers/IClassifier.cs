@@ -13,6 +13,12 @@ namespace NeoCortexApi.Classifiers
 
         List<ClassifierResult<TIN>> GetPredictedInputValues(int[] cellIndicies, short howMany = 1);
 
+        void Learn(TIN input, Cell[] output, object optionalInfo = null) {
+            Learn(input, output);
+        }
 
+        List<ClassifierResult<TIN>> GetPredictedInputValues(int[] cellIndicies, short howMany = 1, object optionalInfo = null) {
+            return GetPredictedInputValues(cellIndicies, howMany);
+        }
     }
 }

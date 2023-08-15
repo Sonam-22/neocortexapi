@@ -3,6 +3,7 @@ using Azure.Data.Tables;
 using MyCloudProject.Common;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace MyExperiment
@@ -39,11 +40,23 @@ namespace MyExperiment
 
         public string InputFileUrl { get; set; }
 
-        public string[] OutputFiles { get; set; }
+        public string OutputFiles { get; set; }
+
+        [IgnoreDataMember]
+        public string[] OutputFilesProxy {
+            get
+            {
+                return OutputFiles.Split(",");
+            }
+
+            set
+            {
+                OutputFiles = string.Join(",", value);
+            }
+        }
         // Your properties related to experiment.
 
         public float Accuracy { get; set; }
-
 
     }
 }
