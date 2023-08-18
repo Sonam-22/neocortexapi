@@ -1,66 +1,16 @@
 # ML22/23-4 Investigate and Implement SDR Classifier - Team-Lightening - Azure Cloud Implementation
 
-This experiment demonstrates a Multisequence experiment using SDRClassifier and complete HTM pipeline inlcuding Encoders, Spatial Pooler and Temporal Memory. In the final stage job of classification of SDRs provided by Temporal memory is achieved using a SDRClassifier, configured in a zero step mode.
+## I. Software Engineering Project Description
 
-~~~csharp
-public voiud MyFunction()
-{
-    Debug.WriteLine("this is a code sample");
-}
-~~~
+### Software Engineering Project : [Code](https://github.com/Sonam-22/neocortexapi/tree/team-lightening/source/MySEProject) & [Paper](https://github.com/Sonam-22/neocortexapi/blob/team-lightening/source/MySEProject/Documentation/SDR-Classifier.pdf)
 
+The Hierarchical Temporal Memory (HTM) model has evolved as a result of advancements in Artificial Neural Networks, which have also improved the Cortical Learning Algorithm (CLA) classifier. This development led to the development of the Sparse Distributed Representation (SDR) classifier, which departs from the CLA method by combining maximum likelihood estimation with a feed-forward neural network. The SDR Classifier is implemented in this work utilizing Numenta's tried-and-true technique.
 
-## What is your experiment about
+With changes to its weight matrix, the SDR Classifier outperforms its predecessor in continuous learning by rewarding correct predictions and punishing inaccurate ones. The learning approaches are used in this process. Sparse Distributed Representations (SDRs), which are essential to the cortex theory of intelligence, serve as the foundation for the SDR Classifier. Using HTM concepts to build overlapping SDRs that efficiently categorize data hierarchically, this method develops an algorithm for anomaly detection and classification.
 
-Describe here what your experiment is doing. Provide a reference to your SE project documentation (PDF)*)
-
-1. What is the **input**?
-
-2. What is the **output**?
-
-3. What your algorithmas does? How ?
-
-## How to run experiment
-
-Describe Your Cloud Experiment based on the Input/Output you gave in the Previous Section.
-
-**_Describe the Queue Json Message you used to trigger the experiment:_**  
-
-~~~json
-{
-     ExperimentId = "123",
-     InputFile = "https://beststudents2.blob.core.windows.net/documents2/daenet.mp4",
-     .. // see project sample for more information 
-};
-~~~
-
-- ExperimentId : Id of the experiment which is run  
-- InputFile: The video file used for trainign process  
-
-**_Describe your blob container registry:**  
-
-what are the blob containers you used e.g.:  
-- 'training_container' : for saving training dataset  
-  - the file provided for training:  
-  - zip, images, configs, ...  
-- 'result_container' : saving output written file  
-  - The file inside are result from the experiment, for example:  
-  - **file Example** screenshot, file, code  
+The SDR Classifier's higher accuracy and efficiency compared to modern algorithms are demonstrated via evaluation across benchmark datasets. These outcomes highlight the SDR Classifier's effectiveness and demonstrate how widely applicable it is in a variety of fields.
 
 
-**_Describe the Result Table_**
 
- What is expected ?
- 
- How many tables are there ? 
- 
- How are they arranged ?
- 
- What do the columns of the table mean ?
- 
- Include a screenshot of your table from the portal or ASX (Azure Storage Explorer) in case the entity is too long, cut it in half or use another format
- 
- - Column1 : explaination
- - Column2 : ...
-Some columns are obligatory to the ITableEntities and don't need Explaination e.g. ETag, ...
- 
+
+## II. Cloud Project Description
