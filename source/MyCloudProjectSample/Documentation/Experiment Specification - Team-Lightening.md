@@ -1,14 +1,15 @@
 # ML22/23-4 Investigate and Implement SDR Classifier - Team-Lightening - Azure Cloud Implementation
 
-This experiment demonstrates a Multisequence experiment using SDRClassifier and complete HTM pipeline inlcuding Encoders, Spatial Pooler and Temporal Memory. In the final stage job of classification of SDRs provided by Temporal memory is achieved using a SDRClassifier, configured in a zero step mode.
+This experiment demonstrates a Multisequence learning experiment using SDRClassifier and complete HTM pipeline inlcuding Encoders, Spatial Pooler and Temporal Memory. In the final stage, job of classification of SDRs provided by Temporal memory is achieved using a SDRClassifier, configured in a zero step mode.
 
-~~~csharp
-public voiud MyFunction()
-{
-    Debug.WriteLine("this is a code sample");
-}
-~~~
+Steps involved in executing the experiment on Azure.
 
+1. Building the docker image
+The code to build the docker container is added as shell script named `build-docker-image.sh`. We just have execute the script from the `source` folder.
+
+```sh
+$ sh build-docker-image.sh
+```
 
 ## What is your experiment about
 
