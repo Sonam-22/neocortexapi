@@ -289,3 +289,4 @@ __pycache__/
 /NeoCortexApi/UnitTestsProject/MnistPng28x28
 /Python/ColumnActivityDiagram/.venv
 /NeoCortexApi/NeoCortexApi.xml
+.DS_Store

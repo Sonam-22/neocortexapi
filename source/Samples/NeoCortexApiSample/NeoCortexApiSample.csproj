@@ -25,6 +25,7 @@
     <ProjectReference Include="..\..\NeoCortexEntities\NeoCortexEntities.csproj" />
     <ProjectReference Include="..\..\NeoCortexUtils\NeoCortexUtils.csproj" />
     <ProjectReference Include="..\..\GridCell\GridCell.csproj" />
+    <ProjectReference Include="..\..\MySEProject\SDRClassifier\SDRClassifier\SDRClassifier.csproj" />
   </ItemGroup>
 
 </Project>

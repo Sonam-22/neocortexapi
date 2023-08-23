@@ -22,7 +22,7 @@ namespace NeoCortexApi
 
         private CortexLayer<object, object> layer { get; set; }
 
-        private HtmClassifier<string, ComputeCycle> classifier { get; set; }
+        private IClassifier<string, ComputeCycle> classifier { get; set; }
 
         /// <summary>
         /// Initializes the predictor functionality.
@@ -31,7 +31,7 @@ namespace NeoCortexApi
         /// <param name="connections">The HTM memory in the learned state.</param>
         /// <param name="classifier">The classifier that contains the state of learned sequences.</param>
 
-        public Predictor(CortexLayer<object, object> layer, Connections connections, HtmClassifier<string, ComputeCycle> classifier)
+        public Predictor(CortexLayer<object, object> layer, Connections connections, IClassifier<string, ComputeCycle> classifier)
         { 
             this.connections = connections;
             this.layer = layer;
@@ -57,7 +57,9 @@ namespace NeoCortexApi
         {
             var lyrOut = this.layer.Compute(input, false) as ComputeCycle;
 
-            List<ClassifierResult<string>> predictedInputValues = this.classifier.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3);
+            var indices = lyrOut.PredictiveCells.Select(cell => cell.Index).ToArray();
+
+            List<ClassifierResult<string>> predictedInputValues = this.classifier.GetPredictedInputValues(indices, 3);
 
             return predictedInputValues;
         }

@@ -1,0 +1,9 @@
+# References for learning
+ 1. https://nupic.docs.numenta.org/stable/api/algorithms/classifiers.html
+ 2. https://hopding.com/sdr-classifier#title
+ 3. https://redwood.berkeley.edu/wp-content/uploads/2022/04/Variable_Binding_for_Sparse_Distributed_Representations_Theory_and_Applications.pdf
+
+
+# Example Data set
+1. http://yann.lecun.com/exdb/mnist/
+2. https://www.cs.toronto.edu/~kriz/cifar.html

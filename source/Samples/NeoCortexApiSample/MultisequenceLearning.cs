@@ -128,12 +128,12 @@ namespace NeoCortexApiSample
 
             //double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
-            
+
             int cycle = 0;
             int matches = 0;
 
-            var lastPredictedValues = new List<string>(new string[] { "0"});
-            
+            var lastPredictedValues = new List<string>(new string[] { "0" });
+
             int maxCycles = 3500;
 
             //
@@ -153,7 +153,7 @@ namespace NeoCortexApiSample
                     foreach (var input in inputs.Value)
                     {
                         Debug.WriteLine($" -- {inputs.Key} - {input} --");
-                    
+
                         var lyrOut = layer1.Compute(input, true);
 
                         if (isInStableState)
@@ -258,12 +258,12 @@ namespace NeoCortexApiSample
                                 Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {item.PredictedInput} - {item.Similarity}");
                             }
 
-                            lastPredictedValues = predictedInputValues.Select(v=>v.PredictedInput).ToList();
+                            lastPredictedValues = predictedInputValues.Select(v => v.PredictedInput).ToList();
                         }
                         else
                         {
                             Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
-                            lastPredictedValues = new List<string> ();
+                            lastPredictedValues = new List<string>();
                         }
                     }
 
@@ -304,11 +304,11 @@ namespace NeoCortexApiSample
             }
 
             Debug.WriteLine("------------ END ------------");
-           
+
             return new Predictor(layer1, mem, cls);
         }
 
-      
+
         /// <summary>
         /// Gets the number of all unique inputs.
         /// </summary>
