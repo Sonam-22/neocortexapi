@@ -12,7 +12,11 @@ public voiud MyFunction()
 
 ## What is your experiment about
 
-Describe here what your experiment is doing. Provide a reference to your SE project documentation (PDF)*)
+Reference of our SE project documentation (PDF)*)
+https://github.com/Sonam-22/neocortexapi/blob/team-lightening/source/MySEProject/Documentation/Implementation%20of%20SDR%20Classifier%20presentation.mp4
+
+Readme.md file availiiable about project here :-
+https://github.com/Sonam-22/neocortexapi/blob/team-lightening/source/MySEProject/Documentation/README.md
 
 1. What is the **input**?
 
