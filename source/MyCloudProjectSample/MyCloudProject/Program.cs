@@ -47,7 +47,7 @@ namespace MyCloudProject
 
             IStorageProvider storageProvider = new AzureStorageProvider(cfgSec);
 
-            Experiment experiment = new Experiment(cfgSec, storageProvider, logger, projectName);
+            Experiment experiment = new(cfgSec, storageProvider, logger, projectName);
 
             await experiment.RunQueueListener(tokeSrc.Token);
 
