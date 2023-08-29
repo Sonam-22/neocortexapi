@@ -18,3 +18,7 @@ The SDR Classifier's higher accuracy and efficiency compared to modern algorithm
 The execution of this project according to the workflow is implemented by the class Experiment.cs. It is situated in NeoCortexUtils directory in the project folder and called by the main Program.cs for implementation. The purpose of experiment class is to establish the folder path locally where files will be downloaded from blob storage and the data present in the downloaded file is executed and uploaded back on azure (Blob & Table). The program will then be executed until signaled to cancel via a cancellation token. The results of the program will then be uploaded in the storage blob and table. This stream of actions is illustrated in several methods discussed below.
 
 ### Code Description
+Here I have to explain the codes
+
+
+## How to run experiment
