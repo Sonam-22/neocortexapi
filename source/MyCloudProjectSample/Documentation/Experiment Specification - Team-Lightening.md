@@ -1,70 +1,39 @@
 # ML22/23-4 Investigate and Implement SDR Classifier - Team-Lightening - Azure Cloud Implementation
 
-This experiment demonstrates a Multisequence experiment using SDRClassifier and complete HTM pipeline inlcuding Encoders, Spatial Pooler and Temporal Memory. In the final stage job of classification of SDRs provided by Temporal memory is achieved using a SDRClassifier, configured in a zero step mode.
+## I. Software Engineering Project Description
 
-~~~csharp
-public voiud MyFunction()
-{
-    Debug.WriteLine("this is a code sample");
-}
-~~~
+### Software Engineering Project : [Code](https://github.com/Sonam-22/neocortexapi/tree/team-lightening/source/MySEProject) & [Paper](https://github.com/Sonam-22/neocortexapi/blob/team-lightening/source/MySEProject/Documentation/SDR-Classifier.pdf)
 
+The Hierarchical Temporal Memory (HTM) model has evolved as a result of advancements in Artificial Neural Networks, which have also improved the Cortical Learning Algorithm (CLA) classifier. This development led to the development of the Sparse Distributed Representation (SDR) classifier, which departs from the CLA method by combining maximum likelihood estimation with a feed-forward neural network. The SDR Classifier is implemented in this work utilizing Numenta's tried-and-true technique.
 
-## What is your experiment about
+With changes to its weight matrix, the SDR Classifier outperforms its predecessor in continuous learning by rewarding correct predictions and punishing inaccurate ones. The learning approaches are used in this process. Sparse Distributed Representations (SDRs), which are essential to the cortex theory of intelligence, serve as the foundation for the SDR Classifier. Using HTM concepts to build overlapping SDRs that efficiently categorize data hierarchically, this method develops an algorithm for anomaly detection and classification.
 
-Reference of our SE project documentation (PDF)*)
-https://github.com/Sonam-22/neocortexapi/blob/team-lightening/source/MySEProject/Documentation/Implementation%20of%20SDR%20Classifier%20presentation.mp4
-
-Readme.md file availiiable about project here :-
-https://github.com/Sonam-22/neocortexapi/blob/team-lightening/source/MySEProject/Documentation/README.md
-
-1. What is the **input**?
-
-2. What is the **output**?
-
-3. What your algorithmas does? How ?
-
-## How to run experiment
-
-Describe Your Cloud Experiment based on the Input/Output you gave in the Previous Section.
-
-**_Describe the Queue Json Message you used to trigger the experiment:_**  
-
-~~~json
-{
-     ExperimentId = "123",
-     InputFile = "https://beststudents2.blob.core.windows.net/documents2/daenet.mp4",
-     .. // see project sample for more information 
-};
-~~~
-
-- ExperimentId : Id of the experiment which is run  
-- InputFile: The video file used for trainign process  
-
-**_Describe your blob container registry:**  
-
-what are the blob containers you used e.g.:  
-- 'training_container' : for saving training dataset  
-  - the file provided for training:  
-  - zip, images, configs, ...  
-- 'result_container' : saving output written file  
-  - The file inside are result from the experiment, for example:  
-  - **file Example** screenshot, file, code  
+The SDR Classifier's higher accuracy and efficiency compared to modern algorithms are demonstrated via evaluation across benchmark datasets. These outcomes highlight the SDR Classifier's effectiveness and demonstrate how widely applicable it is in a variety of fields.
 
 
-**_Describe the Result Table_**
 
- What is expected ?
- 
- How many tables are there ? 
- 
- How are they arranged ?
- 
- What do the columns of the table mean ?
- 
- Include a screenshot of your table from the portal or ASX (Azure Storage Explorer) in case the entity is too long, cut it in half or use another format
- 
- - Column1 : explaination
- - Column2 : ...
-Some columns are obligatory to the ITableEntities and don't need Explaination e.g. ETag, ...
- 
+
+## II. Cloud Project Description
+
+The execution of this project according to the workflow is implemented by the class Experiment.cs. It is situated in NeoCortexUtils directory in the project folder and called by the main Program.cs for implementation. The purpose of the experiment class is to establish the folder path locally where files will be downloaded from blob storage and the data present in the downloaded file is executed and uploaded back on Azure (Blob & Table). The program will then be executed until signaled to cancel via a cancellation token. The results of the program will then be uploaded in the storage blob and table. This stream of actions is illustrated in several methods discussed below.
+
+### Code Description
+Here I have to explain the codes
+
+
+## III.How to run the experiment
+Description 
+
+### Input
+
+
+### Output
+* ### Azure Blob Storage:
+
+* ### Table Storage:
+
+
+
+## IV. Docker :
+This segment finalizes the entire procedure of automating the project and executing it autonomously, irrespective of the processing speed of the client's computer.
+
