@@ -1,6 +1,21 @@
 # ML22/23-4 Investigate and Implement SDR Classifier - Team-Lightening - Azure Cloud Implementation
 
+## Description
+
 This experiment demonstrates a Multisequence learning experiment using SDRClassifier and complete HTM pipeline inlcuding Encoders, Spatial Pooler and Temporal Memory. In the final stage, job of classification of SDRs provided by Temporal memory is achieved using a SDRClassifier, configured in a zero step mode.
+
+In this experiment, we first convert the raw sequence inputs into SDRs using the scalar encoder. In the next steps, we train the Spatial pooler and Temporal memory using the inputs of scalar encoder, with a total of 3500 cycles for each sequence. On the other hand, once the training of spatial pooler and Temporal memory is completed, we train the SDR Classifier, using the predictive cells of Temporal memory and Bucket index of scalar encoder, with a maximum of 3500 cycles.
+
+While we train the SDR Classifier, we keep measuring the attained accuracy after each cycle. As a matter of fact, SDR Classifier updates its weight matrix during its supervised training phase, so that it could attain maximum possible accuracy.
+
+In this experiment, we weight upto 30 times, until the accuracy of learning reaches maximum possible accuracy, which is 100 in this case. This part is repeated for each sequence. During each training cycle set, once training of SDR Classifier for a sequence is completed, temporal memory is reset. This enables the first element starts always from the beginning.
+
+After a certain number cycles, which is around 250 to 300 in this experiment, learning gets completed for both the sequence.
+Once the model trained with both the sequence, it is available to use for predictions.
+
+In the next steps, we feed a few relevant numbers to the model. The model predicts the next element and the name of the sequence in which there is a highiest probablity of that number to appear. Based on the predictions results, average accuracy of the model is calculated.
+
+# How to run this experiment on cloud.
 
 Steps involved in executing the experiment on Azure.
 
