@@ -8,10 +8,7 @@ The Hierarchical Temporal Memory (HTM) model has evolved as a result of advancem
 
 With changes to its weight matrix, the SDR Classifier outperforms its predecessor in continuous learning by rewarding correct predictions and punishing inaccurate ones. The learning approaches are used in this process. Sparse Distributed Representations (SDRs), which are essential to the cortex theory of intelligence, serve as the foundation for the SDR Classifier. Using HTM concepts to build overlapping SDRs that efficiently categorize data hierarchically, this method develops an algorithm for anomaly detection and classification.
 
-The SDR Classifier's higher accuracy and efficiency compared to modern algorithms are demonstrated via evaluation across benchmark datasets. These outcomes highlight the SDR Classifier's effectiveness and demonstrate how widely applicable it is in a variety of fields.
-
-
-
+The SDR Classifier's higher accuracy and efficiency compared to modern algorithms are demonstrated via evaluation across benchmark datasets. 
 
 ## II. Cloud Project Description
 
