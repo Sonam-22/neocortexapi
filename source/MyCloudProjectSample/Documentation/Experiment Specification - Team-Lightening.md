@@ -11,9 +11,9 @@ While we train the SDR Classifier, we keep measuring the attained accuracy after
 In this experiment, we weight upto 30 times, until the accuracy of learning reaches maximum possible accuracy, which is 100 in this case. This part is repeated for each sequence. During each training cycle set, once training of SDR Classifier for a sequence is completed, temporal memory is reset. This enables the first element starts always from the beginning.
 
 After a certain number cycles, which is around 250 to 300 in this experiment, learning gets completed for both the sequence.
-Once the model trained with both the sequence, it is available to use for predictions.
+Once the model is trained with both the sequence, it is available to use for predictions.
 
-In the next steps, we feed a few relevant numbers to the model. The model predicts the next element and the name of the sequence in which there is a highiest probablity of that number to appear. Based on the predictions results, average accuracy of the model is calculated.
+In the next steps, we feed a few relevant numbers to the model. The model predicts the next element and the name of the sequence in which there is a highiest probablity of that number to appear. Based on the predicted results, average accuracy of the model is calculated.
 
 ## Software Engineering Project
 
@@ -58,7 +58,7 @@ Input to this experiment are two training sequeneces of numbers, namely S1 and S
 
 ## Output of the experiment
 
-The output of this experiment is the predictions of Sequence and next element for a given number. The numbers mentioned in `Validation` section are fed into predictor. Predictor outputs the sequence name and next element that may appear in the predicted sequence. Predictor also outputs next three sequence and element which are closest to the input. For example, when the input is 4, the predicted sequence and next element output the from the predictor becomes S1 and 2.0. Along with this we also get closest sequence information and average accuracy of the predictions for the given input set.
+The output of this experiment is the predictions of Sequence and next element for a given number. The numbers mentioned in `Validation` section are fed into predictor. Predictor outputs the sequence name and next element that may appear in the predicted sequence. Predictor also outputs next three sequence and element which are closest to the input. For example, when the input is 4, the predicted sequence and next element output the from the predictor becomes S1 and 2.0. Along with this, we also get closest sequence information and average accuracy of the predictions for the given input set.
 
 ```text
 --------------- Input 4 ---------------
@@ -72,7 +72,7 @@ Predicted Sequence: S1, predicted next element 2
 Prediction accuracy for 1,2,3,4,2,5 is 100%.
 ```
 Other than this, we also get the trained model which could be used for prediction.
-Overall example output and training logs could be found here.
+Overall, example output and training logs could be found here.
 
 [Output File](./outputfile.txt)
 
@@ -91,17 +91,17 @@ In this experiment, we have basically validated the working of SDR Classsifier i
 
 **SDR Classifier**
 
-Let's first understand the working of SDR Classifier. it works on the principles of supervised learning and feed forward neural network. During the training phase, classifier recieves the indices of active cells from the Temporal memory. Along with that, Classifier also recieves the actual input and bucket index of the input used by the encoder to encode the input. Bucket indexes and actual inputs are helpful in retracing the actual input as during the predictions, classifier only provides the bucket indexes and its likelyhood of matching the actual input. The classifier works as described below.
+Let's first understand the working of SDR Classifier. it works on the principles of supervised learning and feed forward neural network. During the training phase, classifier recieves the indices of active cells from the Temporal memory. Along with that, Classifier also recieves the actual input and bucket index of the input used by the encoder to encode the input. Bucket indexes and actual inputs are helpful in retracing the actual input as during the predictions, classifier only provides the bucket indexes and its likelyhood of matching the actual input. The classifier works as described below:
 
 1. The classifier takes indices of active cells from temporal memory and bucket index and actual values from the encoder.
 2. The SDR classifier maps input patterns to class labels. There are as many
    output units as the number of class labels or buckets (in the case of scalar
    encoders). The output is a probabilistic distribution over all class labels.
 3. During inference, the output is calculated by first doing a weighted summation
-   of all the inputs, and then perform a softmax nonlinear function to get
-   the predicted distribution of class labels
+   of all the inputs, and then perform a softmax non-linear function to get
+   the predicted distribution of class labels.
 4. During learning, the connection weights between input units and output units
-   are adjusted to maximize the likelihood of the model   
+   are adjusted to maximize the likelihood of the model.  
 
 Detailed description of wroking the SDR Classifier is avaialable in our SE Project documentation
 
@@ -139,7 +139,7 @@ public List<ClassifierResult<string>> Predict(double input)
   return predictedInputValues;
 }
 ```
-2. Predictive cell indices provided by the temporal memory are provided to the classifiers prediction function to recieve the closest 3 predictions
+2. Predictive cell indices provided by the temporal memory are provided to the classifiers prediction function to recieve the closest 3 predictions.
 
 3. Predicted sequence information is returned.
 
