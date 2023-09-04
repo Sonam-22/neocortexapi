@@ -46,7 +46,6 @@ namespace MyExperiment
             // TODO read file
 
             var outputFile = "output.txt";
-            List<double> accuracies = new();
             var text = File.ReadAllText(inputFile, Encoding.UTF8);
             var trainingData = JsonSerializer.Deserialize<TrainingData>(text);
             var sequeneceAsString = trainingData.Sequences
@@ -67,7 +66,9 @@ namespace MyExperiment
             // Train the model
             var predictor = experiment.Train(trainingData.Sequences);
 
-            trainingData.Validation.ForEach(seq => PredictNextElement(predictor, seq, outputFile, accuracies));
+            var acc = trainingData.Validation
+                .Select(seq => PredictNextElement(predictor, seq, outputFile))
+                .Average();
 
             res.Timestamp = DateTime.UtcNow;
             res.EndTimeUtc = DateTime.UtcNow;
@@ -78,7 +79,7 @@ namespace MyExperiment
             res.InputFileUrl = inputFile;
             res.Description = "MultiSequence learning with sdr classifier";
             res.Name = "MultiSequence learning";
-            res.Accuracy = 100;
+            res.Accuracy = Convert.ToSingle(acc);
             return Task.FromResult<IExperimentResult>(res);
         }
 
@@ -136,7 +137,7 @@ namespace MyExperiment
 
         #region Private Methods
 
-        private void PredictNextElement(Predictor predictor, double[] list, string outputFileName, List<double> accuracies)
+        private double PredictNextElement(Predictor predictor, double[] list, string outputFileName)
         {
             List<string> resultLines = new();
 
@@ -144,7 +145,9 @@ namespace MyExperiment
 
             predictor.Reset();
 
-         
+            int totalPredictions = 0;
+            int totalMatchCount = 0;
+             
             foreach (var item in list)
             {
                 AddAndLog(resultLines, $"--------------- Input {item} ---------------");
@@ -158,17 +161,26 @@ namespace MyExperiment
                     {
                         AddAndLog(resultLines, $"{pred.PredictedInput} - {pred.Similarity}%");
                     }
-                    accuracies.Add(res[0].Similarity);
                     var predictedSequence = res.First().PredictedInput.Split('_').First();
                     var predictedValue = res.First().PredictedInput.Split('-').Last();
                     AddAndLog(resultLines, $"Predicted Sequence: {predictedSequence}, predicted next element {predictedValue}");
+                    totalMatchCount += 1;
                 }
                 else
+                {
                     AddAndLog(resultLines, "Nothing predicted :(");
+                }
+
+                totalPredictions += 1;
             }
 
+            var predictionAccuracy = (totalMatchCount * 100) / totalPredictions;
+
             AddAndLog(resultLines, "------------------------------");
+            AddAndLog(resultLines, $"Prediction accuracy for {string.Join(",", list)} is {predictionAccuracy}");
             File.AppendAllLines(outputFileName, resultLines);
+
+            return predictionAccuracy;
         }
 
         private void AddAndLog(List<string> resultLines, string line) {
