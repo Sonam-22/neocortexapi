@@ -13,7 +13,7 @@ namespace MyCloudProject
         /// <summary>
         /// Your project ID from the last semester.
         /// </summary>
-        private static string projectName = "ML22/23-4 Investigate and Implement SDR Classifier";
+        private static readonly string projectName = "ML22/23-4 Investigate and Implement SDR Classifier";
 
         string test;
 
@@ -47,7 +47,7 @@ namespace MyCloudProject
 
             IStorageProvider storageProvider = new AzureStorageProvider(cfgSec);
 
-            Experiment experiment = new Experiment(cfgSec, storageProvider, logger, projectName);
+            Experiment experiment = new(cfgSec, storageProvider, logger, projectName);
 
             await experiment.RunQueueListener(tokeSrc.Token);
 
