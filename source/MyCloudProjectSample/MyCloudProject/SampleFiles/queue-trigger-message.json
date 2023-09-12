@@ -1,6 +1,6 @@
 ﻿{
-  "ExperimentId": "1",
+  "ExperimentId": "2",
   "InputFile": "training.txt",
-  "Description": "Test",
-  "Name": "Test"
+  "Description": "SDR Classifier Multi sequence learning",
+  "Name": "Multi sequence learning"
 }

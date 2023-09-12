@@ -77,8 +77,6 @@ namespace MyExperiment
             res.DurationSec = (long)elapsedTime.GetValueOrDefault().TotalSeconds;
             res.OutputFilesProxy = new string[] { outputFile };
             res.InputFileUrl = inputFile;
-            res.Description = "MultiSequence learning with sdr classifier";
-            res.Name = "MultiSequence learning";
             res.Accuracy = Convert.ToSingle(acc);
             return Task.FromResult<IExperimentResult>(res);
         }
@@ -110,6 +108,9 @@ namespace MyExperiment
                         var inputFile = await storageProvider.DownloadInputFile(request.InputFile);
 
                         ExperimentResult result = await Run(inputFile) as ExperimentResult;
+                        result.Name = request.Name;
+                        result.Description = request.Description;
+                        result.ExperimentId = request.ExperimentId;
 
                         await storageProvider.UploadResultFile("outputfile.txt", File.ReadAllBytes(result.OutputFilesProxy[0]));
 
