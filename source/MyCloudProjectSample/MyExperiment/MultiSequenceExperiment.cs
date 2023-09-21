@@ -11,6 +11,9 @@ using Microsoft.Extensions.Logging;
 
 namespace MyExperiment
 {
+    /// <summary>
+    /// Multi sequence experiment api.
+    /// </summary>
     public class MultiSequenceExperiment
     {
 
@@ -80,7 +83,8 @@ namespace MyExperiment
         }
 
         /// <summary>
-        ///
+        /// Runs the experiment with the given input files, SDR classifier and remaining HTM components such as 
+        /// Spatial Pooler and Temporal Memory
         /// </summary>
         private Predictor RunExperiment(int inputBits, HtmConfig cfg, EncoderBase encoder, Dictionary<string, List<double>> sequences)
         {
@@ -89,6 +93,7 @@ namespace MyExperiment
 
             int maxMatchCnt = 0;
 
+            // SDR Classifier steps configuration
             int step = 0;
 
             var mem = new Connections(cfg);
@@ -248,7 +253,7 @@ namespace MyExperiment
                             actCells = lyrOut.WinnerCells;
                         }
 
-                        //Creates required sdr classifier inputs
+                        //Creates required SDR Classifier inputs for learning
                         var learnInfo = new SDRClassifierInput<string>
                         {
                             BucketIndex = new double[] { bucketIndex },
@@ -341,7 +346,12 @@ namespace MyExperiment
 
             return new Predictor(layer1, mem, cls);
         }
-
+        
+        /// <summary>
+        /// Extracts the indices from cells
+        /// </summary>
+        /// <param name="cells">Input cells</param>
+        /// <returns>Indices of cells</returns>
         private int[] ToIndices(List<Cell> cells)
         {
             return cells

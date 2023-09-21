@@ -43,29 +43,28 @@ namespace MyExperiment
 
         public Task<IExperimentResult> Run(string inputFile)
         {
-            // TODO read file
-
+                
             var outputFile = "output.txt";
+            // Reads the input file specified in queue message
             var text = File.ReadAllText(inputFile, Encoding.UTF8);
             var trainingData = JsonSerializer.Deserialize<TrainingData>(text);
             var sequeneceAsString = trainingData.Sequences
                 .Select(kv => $"{kv.Key} : {string.Join(",", kv.Value)}")
                 .ToArray();
             sequeneceAsString.Prepend("Training Sequences");
+            // Prints the training the sequences into output file
             File.AppendAllLines(outputFile, sequeneceAsString);
-            // YOU START HERE WITH YOUR SE EXPERIMENT!!!!
-
+            // Creates instance of the multisequence experiment and starts the experiment.
             MultiSequenceExperiment experiment = new(logger);
-
+            // Experiment result instance.
             ExperimentResult res = new ExperimentResult(this.config.GroupId, "1");
 
             res.StartTimeUtc = DateTime.UtcNow;
 
-            // Run your experiment code here.
-
             // Train the model
             var predictor = experiment.Train(trainingData.Sequences);
-
+            
+            // Calculate the average accuracy for a set of predictions 
             var acc = trainingData.Validation
                 .Select(seq => PredictNextElement(predictor, seq, outputFile))
                 .Average();
@@ -83,7 +82,11 @@ namespace MyExperiment
 
         
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// This method starts the experiment and waits for a new experiment trigger message.
+        /// </summary>
+        /// <param name="cancelToken">Token required to interrupt the running experiment and release resources</param>
+        /// <returns></returns>
         public async Task RunQueueListener(CancellationToken cancelToken)
         {
           
@@ -108,16 +111,17 @@ namespace MyExperiment
                         var inputFile = await storageProvider.DownloadInputFile(request.InputFile);
 
                         ExperimentResult result = await Run(inputFile) as ExperimentResult;
+                        // Updates the experiment data
                         result.Name = request.Name;
                         result.Description = request.Description;
                         result.ExperimentId = request.ExperimentId;
-
+                        // Upload the output result to blob container.
                         await storageProvider.UploadResultFile("outputfile.txt", File.ReadAllBytes(result.OutputFilesProxy[0]));
-
+                        // Write the experiment result entity into azure table. 
                         await storageProvider.UploadExperimentResult(result);
-
+                        // Deletes the queue message when experiment completes.    
                         await queueClient.DeleteMessageAsync(message.MessageId, message.PopReceipt);
-
+                        // Deleted the temporary out file generated.    
                         File.Delete(result.OutputFilesProxy[0]);
                     }
                     catch (Exception ex)
@@ -137,7 +141,13 @@ namespace MyExperiment
 
 
         #region Private Methods
-
+        /// <summary>
+        /// Predicts the next input element and writes the result into the output file.
+        /// </summary>
+        /// <param name="predictor">Predictor instance from neocortex api</param>
+        /// <param name="list">List of inputs for prediction of next input element</param>
+        /// <param name="outputFileName">Name of the output file.</param>
+        /// <returns></returns>
         private double PredictNextElement(Predictor predictor, double[] list, string outputFileName)
         {
             List<string> resultLines = new();
@@ -175,6 +185,7 @@ namespace MyExperiment
                 totalPredictions += 1;
             }
 
+            // Calculate the accuracy based on the matching results.    
             var predictionAccuracy = (totalMatchCount * 100) / totalPredictions;
 
             AddAndLog(resultLines, "------------------------------");
@@ -183,7 +194,11 @@ namespace MyExperiment
 
             return predictionAccuracy;
         }
-
+        /// <summary>
+        /// Logs the comment as info and append it to the output file.
+        /// </summary>
+        /// <param name="resultLines">Result line accumulator list</param>
+        /// <param name="line">Current line to be added</param>
         private void AddAndLog(List<string> resultLines, string line) {
             logger.LogInformation(line);
             resultLines.Add(line);

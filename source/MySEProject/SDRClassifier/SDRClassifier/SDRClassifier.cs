@@ -227,7 +227,13 @@ namespace SDRClassifier
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// Delegate method for connecting neocortex api's 
+        /// Learn method with Classifier's Compute method in prediction switched off mode.
+        /// </summary>
+        /// <param name="input">Actual input</param>
+        /// <param name="output">Cells corresponding the actual input used for training</param>
+        /// <param name="optionalInfo">Additional information required by SDR Classifier</param>
         public void Learn(TIN input, Cell[] output, object optionalInfo)
         {
             var cellIndicies = output
@@ -242,13 +248,26 @@ namespace SDRClassifier
 
             Compute(optionals.RecordNumber, cellIndicies, classification, true, false);
         }
-
+        
+        /// <summary>
+        /// Delegate method to connect neocortex api's GetPredictedInputValues to SDR Classifier's Infer method.
+        /// </summary>
+        /// <param name="cellIndicies"Input cells </param>
+        /// <param name="howMany">Required number of top predictions</param>
+        /// <returns>List of Classification result</returns>
         public List<ClassifierResult<TIN>> GetPredictedInputValues(int[] cellIndicies, short howMany = 1)
         {
             var inferredValues = Infer(cellIndicies.ToList(), null);
             return ToClassficationResults(inferredValues, howMany);
         }
-
+        
+        /// <summary>
+        /// Delegate method to connect neocortex api's GetPredictedInputValues to SDR Classifier's Infer method.
+        /// </summary>
+        /// <param name="cellIndicies">Input cell indices</param>
+        /// <param name="howMany">Required number of top predictions</param>
+        /// <param name="optionalInfo">Additional information required by SDR Classifier</param>
+        /// <returns>List of Classification result</returns>
         public List<ClassifierResult<TIN>> GetPredictedInputValues(int[] cellIndicies, short howMany, object optionalInfo)
         {
             var optionals = (SDRClassifierInput<TIN>)optionalInfo;
@@ -260,7 +279,12 @@ namespace SDRClassifier
             var inferredValues = Compute(optionals.RecordNumber, cellIndicies.ToList(), classification, false, true);
             return ToClassficationResults(inferredValues, howMany);
         }
-
+        /// <summary>
+        /// Converts SDR Classifier's inferred values to neocortex api's classification results.
+        /// </summary>
+        /// <param name="inferredValues">Inferred values by classifier</param>
+        /// <param name="howMany">Required number of top prediction</param>
+        /// <returns>List of Classification result</returns>
         private List<ClassifierResult<TIN>> ToClassficationResults(SDRClassification<TIN> inferredValues, short howMany = 1) {
             var firstStep = inferredValues.Classifications[steps[0].ToString()];
             var sorted = np.array(firstStep)
@@ -490,7 +514,11 @@ namespace SDRClassifier
             }
             return error;
         }
-
+        /// <summary>
+        /// Determine if the input is numeric
+        /// </summary>
+        /// <param name="value">Value to be tested</param>
+        /// <returns>Is input numeric</returns>
         public static bool IsNumeric(object? value)
         {
             return (value is Byte ||

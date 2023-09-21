@@ -12,15 +12,4 @@ namespace MyExperiment
         public string Name { get; set; }
         public string Description { get; set; }
     }
-}
-
-
-/*
- 
- {
-    "ExperimentId": "sasa",
-    "InputFile":"sasss",
-
-}
- 
- */ 
+} 
