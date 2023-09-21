@@ -9,6 +9,9 @@ using System.Text;
 namespace MyExperiment
 {
 
+    /// <summary>
+    /// Model for experiment result.
+    /// </summary>
     public class ExperimentResult : ITableEntity, IExperimentResult
     {
         public ExperimentResult(string partitionKey, string rowKey)
@@ -54,8 +57,7 @@ namespace MyExperiment
                 OutputFiles = string.Join(",", value);
             }
         }
-        // Your properties related to experiment.
-
+    
         public float Accuracy { get; set; }
 
     }
