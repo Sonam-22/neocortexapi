@@ -107,7 +107,7 @@ namespace MyExperiment
                         logger?.LogInformation($"Received the message {msgTxt}");
 
                         ExerimentRequestMessage request = JsonSerializer.Deserialize<ExerimentRequestMessage>(msgTxt);
-
+                        // Download the training file.
                         var inputFile = await storageProvider.DownloadInputFile(request.InputFile);
 
                         ExperimentResult result = await Run(inputFile) as ExperimentResult;
