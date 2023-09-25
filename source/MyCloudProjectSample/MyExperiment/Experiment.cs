@@ -45,22 +45,31 @@ namespace MyExperiment
         {
                 
             var outputFile = "output.txt";
+            var initialFileLines = new List<string>
+            {
+                $"Experiment: {projectName}",
+                Environment.NewLine
+            };
             // Reads the input file specified in queue message
             var text = File.ReadAllText(inputFile, Encoding.UTF8);
             var trainingData = JsonSerializer.Deserialize<TrainingData>(text);
-            var sequeneceAsString = trainingData.Sequences
+            // Prints the experiment description to output file.
+            var predictionInputs = string.Join(",", trainingData.Validation
+                .Select(kv => $"{string.Join(",", kv)} | ")
+                .ToArray());
+           
+            initialFileLines.Add($"Experiment for inputs: {predictionInputs}");
+            initialFileLines.Add("Experiment with the learned sequences:");
+            initialFileLines.AddRange(trainingData.Sequences
                 .Select(kv => $"{kv.Key} : {string.Join(",", kv.Value)}")
-                .ToArray();
-            sequeneceAsString.Prepend("Training Sequences");
-            // Prints the training the sequences into output file
-            File.AppendAllLines(outputFile, sequeneceAsString);
+                .ToArray());
+            initialFileLines.Add(Environment.NewLine);
+            File.AppendAllLines(outputFile, initialFileLines);
             // Creates instance of the multisequence experiment and starts the experiment.
             MultiSequenceExperiment experiment = new(logger);
             // Experiment result instance.
-            ExperimentResult res = new ExperimentResult(this.config.GroupId, "1");
-
+            ExperimentResult res = new ExperimentResult(this.config.GroupId, Guid.NewGuid().ToString());
             res.StartTimeUtc = DateTime.UtcNow;
-
             // Train the model
             var predictor = experiment.Train(trainingData.Sequences);
             
@@ -77,6 +86,9 @@ namespace MyExperiment
             res.OutputFilesProxy = new string[] { outputFile };
             res.InputFileUrl = inputFile;
             res.Accuracy = Convert.ToSingle(acc);
+
+            File.AppendAllText(outputFile, $"Total Duration: {res.DurationSec} seconds");
+
             return Task.FromResult<IExperimentResult>(res);
         }
 
@@ -152,7 +164,9 @@ namespace MyExperiment
         {
             List<string> resultLines = new();
 
-            AddAndLog(resultLines, "------------------------------");
+            AddAndLog(resultLines, "---------------------------------------------------------------");
+
+            AddAndLog(resultLines, $"Inputs for predicting the next element: {string.Join(",", list)}" );
 
             predictor.Reset();
 
@@ -161,7 +175,7 @@ namespace MyExperiment
              
             foreach (var item in list)
             {
-                AddAndLog(resultLines, $"--------------- Input {item} ---------------");
+                AddAndLog(resultLines, $"Input Element: {item} ------------------------------------");
 
                 var res = predictor.Predict(item);
 
@@ -172,9 +186,16 @@ namespace MyExperiment
                     {
                         AddAndLog(resultLines, $"{pred.PredictedInput} - {pred.Similarity}%");
                     }
-                    var predictedSequence = res.First().PredictedInput.Split('_').First();
-                    var predictedValue = res.First().PredictedInput.Split('-').Last();
-                    AddAndLog(resultLines, $"Predicted Sequence: {predictedSequence}, predicted next element {predictedValue}");
+                    var firstPrediction = res.First().PredictedInput;
+                    var predictedSequence = firstPrediction.Split('_').First();
+                    var predictedValue = firstPrediction.Split('-').Last();
+                    var remainingSequence = string.Join(",", firstPrediction.Split('_')
+                        .Last()
+                        .Split('-')
+                        .SkipLast(1)
+                        .ToArray());
+                    
+                    AddAndLog(resultLines, $"Predicted Sequence: {predictedSequence}, predicted next element {predictedValue} after {remainingSequence}.");
                     totalMatchCount += 1;
                 }
                 else
@@ -183,13 +204,15 @@ namespace MyExperiment
                 }
 
                 totalPredictions += 1;
+                AddAndLog(resultLines, Environment.NewLine);
             }
 
             // Calculate the accuracy based on the matching results.    
             var predictionAccuracy = (totalMatchCount * 100) / totalPredictions;
 
-            AddAndLog(resultLines, "------------------------------");
-            AddAndLog(resultLines, $"Prediction accuracy for {string.Join(",", list)} is {predictionAccuracy}");
+            AddAndLog(resultLines, $"Prediction accuracy for {string.Join(",", list)} is {predictionAccuracy}%");
+            AddAndLog(resultLines, Environment.NewLine);
+            AddAndLog(resultLines, "--------------------------------------------------------------------------");
             File.AppendAllLines(outputFileName, resultLines);
 
             return predictionAccuracy;
