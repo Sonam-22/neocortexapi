@@ -50,7 +50,7 @@ namespace MyExperiment
                 $"Experiment: {projectName}",
                 Environment.NewLine
             };
-            // Reads the input file specified in queue message
+            // Read the downloaded training file and deserialize it as TrainingData
             var text = File.ReadAllText(inputFile, Encoding.UTF8);
             var trainingData = JsonSerializer.Deserialize<TrainingData>(text);
             // Prints the experiment description to output file.
@@ -117,7 +117,7 @@ namespace MyExperiment
                         string msgTxt = Encoding.UTF8.GetString(message.Body.ToArray());
 
                         logger?.LogInformation($"Received the message {msgTxt}");
-
+                        // Download the training file and deserialize it as ExerimentRequestMessage
                         ExerimentRequestMessage request = JsonSerializer.Deserialize<ExerimentRequestMessage>(msgTxt);
                         // Download the training file.
                         var inputFile = await storageProvider.DownloadInputFile(request.InputFile);

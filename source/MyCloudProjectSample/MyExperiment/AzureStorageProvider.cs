@@ -35,7 +35,7 @@ namespace MyExperiment
 
             // Get a reference to a blob named "sample-file"
             BlobClient blob = container.GetBlobClient(fileName);
-            // Downloads the file asynchrounously
+            // Downloads the file asynchronously
             await blob.DownloadToAsync(fileName);
 
             return fileName;
